@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Geexxykee Tools Site" },
+      { name: "description", content: "Pic & Pad Studio lets you upload images, add custom top padding with text, and download as GIF or PNG." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Geexxykee Tools Site" },
+      { property: "og:description", content: "Pic & Pad Studio lets you upload images, add custom top padding with text, and download as GIF or PNG." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Geexxykee Tools Site" },
+      { name: "twitter:description", content: "Pic & Pad Studio lets you upload images, add custom top padding with text, and download as GIF or PNG." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/96c07a46-338e-4288-89f6-1dbf917320a6/id-preview-328cb8ae--549e70f5-71f7-452b-9bd6-31aa16953c9a.lovable.app-1780414712619.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/96c07a46-338e-4288-89f6-1dbf917320a6/id-preview-328cb8ae--549e70f5-71f7-452b-9bd6-31aa16953c9a.lovable.app-1780414712619.png" },
     ],
     links: [
       {
