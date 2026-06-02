@@ -91,18 +91,12 @@
 @layer utilities {
   .text-rgb {
     background: var(--gradient-rgb);
-    background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: rgb-slide 6s linear infinite;
   }
 
   .glow-border {
     box-shadow: var(--shadow-glow);
   }
-}
-
-@keyframes rgb-slide {
-  to { background-position: 200% 0; }
 }
