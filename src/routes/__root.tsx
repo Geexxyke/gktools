@@ -89,6 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: "Pic & Pad Studio lets you upload images, add custom top padding with text, and download as GIF or PNG." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/96c07a46-338e-4288-89f6-1dbf917320a6/id-preview-328cb8ae--549e70f5-71f7-452b-9bd6-31aa16953c9a.lovable.app-1780414712619.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/96c07a46-338e-4288-89f6-1dbf917320a6/id-preview-328cb8ae--549e70f5-71f7-452b-9bd6-31aa16953c9a.lovable.app-1780414712619.png" },
+      { name: "google-site-verification", content: "kXMQheS2IuFmkBQxoSbDCLikyiaDzy7FmwpawCzszrg" },
     ],
     links: [
       {
