@@ -81,10 +81,20 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+
+  /* Decorative background as a fixed, GPU-promoted layer so it doesn't repaint on scroll */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image:
       radial-gradient(ellipse 80% 50% at 20% 0%, oklch(0.3 0.15 320 / 0.25), transparent),
       radial-gradient(ellipse 60% 50% at 80% 100%, oklch(0.3 0.15 200 / 0.2), transparent);
-    background-attachment: fixed;
+    transform: translateZ(0);
+    will-change: transform;
   }
 }
 
