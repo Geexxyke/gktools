@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
-import { SmoothScroll } from "@/components/SmoothScroll";
 
 export const Route = createFileRoute("/")({
   head: () => ({
