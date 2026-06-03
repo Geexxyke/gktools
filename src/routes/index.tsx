@@ -1,18 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
+import { ImageCompressor } from "@/components/ImageCompressor";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "GK Tools — Kreatív eszközök egy helyen" },
-      { name: "description", content: "Mémgenerátor és további kreatív online eszközök." },
+      { name: "description", content: "Mémgenerátor, képtömörítő és további kreatív online eszközök." },
     ],
   }),
   component: Home,
 });
 
-type Tab = "home" | "meme";
+type Tab = "home" | "meme" | "image";
 
 const tools = [
   {
@@ -23,11 +25,11 @@ const tools = [
     ready: true,
   },
   {
-    id: "soon1",
-    name: "Kép tömörítő",
+    id: "image" as const,
+    name: "Kép tömörítő & Resize",
     icon: "🗜️",
-    desc: "Hamarosan.",
-    ready: false,
+    desc: "Tömöríts pontos MB-ra vagy állíts be új px méretet.",
+    ready: true,
   },
   {
     id: "soon2",
@@ -43,6 +45,7 @@ function Home() {
 
   return (
     <div className="min-h-screen">
+      <SmoothScroll />
       <header className="border-b border-border/50 backdrop-blur sticky top-0 z-10 bg-background/70">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <button onClick={() => setTab("home")} className="flex items-center gap-2">
@@ -52,6 +55,7 @@ function Home() {
           <nav className="flex gap-1">
             <TabBtn active={tab === "home"} onClick={() => setTab("home")}>Home</TabBtn>
             <TabBtn active={tab === "meme"} onClick={() => setTab("meme")}>Mémgenerátor</TabBtn>
+            <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
           </nav>
         </div>
       </header>
@@ -65,6 +69,15 @@ function Home() {
             </h2>
             <p className="text-muted-foreground mb-6">Húzz be egy képet, állítsd a sávot, írd meg a szöveged.</p>
             <MemeGenerator />
+          </section>
+        ) : null}
+        {tab === "image" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Kép tömörítő & Resize</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">Tömöríts pontos méretre vagy állíts be új felbontást.</p>
+            <ImageCompressor />
           </section>
         ) : null}
       </main>
