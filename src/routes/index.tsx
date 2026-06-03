@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
-import { SmoothScroll } from "@/components/SmoothScroll";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -45,7 +44,6 @@ function Home() {
 
   return (
     <div className="min-h-screen">
-      <SmoothScroll />
       <header className="border-b border-border/50 backdrop-blur sticky top-0 z-10 bg-background/70">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <button onClick={() => setTab("home")} className="flex items-center gap-2">
