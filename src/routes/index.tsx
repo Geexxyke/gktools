@@ -55,6 +55,7 @@ function Home() {
             <TabBtn active={tab === "home"} onClick={() => setTab("home")}>Home</TabBtn>
             <TabBtn active={tab === "meme"} onClick={() => setTab("meme")}>Mémgenerátor</TabBtn>
             <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
+            <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
           </nav>
         </div>
       </header>
@@ -77,6 +78,15 @@ function Home() {
             </h2>
             <p className="text-muted-foreground mb-6">Tömöríts pontos méretre vagy állíts be új felbontást.</p>
             <ImageCompressor />
+          </section>
+        ) : null}
+        {tab === "blur" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Arc kitakaró</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">Rajzolj téglalapot a kitakarni kívánt részekre.</p>
+            <FaceBlur />
           </section>
         ) : null}
       </main>
