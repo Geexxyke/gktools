@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
+import { FaceBlur } from "@/components/FaceBlur";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-type Tab = "home" | "meme" | "image";
+type Tab = "home" | "meme" | "image" | "blur";
 
 const tools = [
   {
@@ -31,11 +32,11 @@ const tools = [
     ready: true,
   },
   {
-    id: "soon2",
-    name: "Színpaletta",
-    icon: "🎨",
-    desc: "Hamarosan.",
-    ready: false,
+    id: "blur" as const,
+    name: "Arc kitakaró",
+    icon: "🫥",
+    desc: "Homályosítsd, pixelezd vagy takard ki az arcokat a képen.",
+    ready: true,
   },
 ];
 
