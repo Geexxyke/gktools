@@ -1,17 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Mode = "blur" | "pixelate" | "black";
-type Region = { x: number; y: number; w: number; h: number; mode: Mode; intensity: number };
+type Shape = "rect" | "brush";
+
+type RectRegion = {
+  kind: "rect";
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  mode: Mode;
+  intensity: number;
+};
+type BrushRegion = {
+  kind: "brush";
+  points: { x: number; y: number }[];
+  size: number;
+  mode: Mode;
+  intensity: number;
+};
+type Region = RectRegion | BrushRegion;
 
 export function FaceBlur() {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [regions, setRegions] = useState<Region[]>([]);
-  const [mode, setMode] = useState<Mode>("blur");
-  const [intensity, setIntensity] = useState(20);
+  const [mode, setMode] = useState<Mode>("pixelate");
+  const [shape, setShape] = useState<Shape>("brush");
+  const [intensity, setIntensity] = useState(28);
+  const [brushSize, setBrushSize] = useState(80);
   const [dragOver, setDragOver] = useState(false);
   const [drawing, setDrawing] = useState<Region | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const loadFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -35,6 +54,75 @@ export function FaceBlur() {
     if (f) loadFile(f);
   };
 
+  const applyClip = (ctx: CanvasRenderingContext2D, r: Region) => {
+    ctx.beginPath();
+    if (r.kind === "rect") {
+      const x = Math.min(r.x, r.x + r.w);
+      const y = Math.min(r.y, r.y + r.h);
+      ctx.rect(x, y, Math.abs(r.w), Math.abs(r.h));
+    } else {
+      const rad = r.size / 2;
+      for (const p of r.points) {
+        ctx.moveTo(p.x + rad, p.y);
+        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+      }
+    }
+    ctx.clip();
+  };
+
+  const renderBlurLayer = (
+    src: HTMLCanvasElement,
+    intensity: number,
+  ): HTMLCanvasElement => {
+    // Stronger blur: downscale heavily, then upscale, plus CSS filter blur on top
+    const scale = Math.max(0.02, Math.min(0.5, 8 / intensity));
+    const tmp = document.createElement("canvas");
+    tmp.width = Math.max(1, Math.floor(src.width * scale));
+    tmp.height = Math.max(1, Math.floor(src.height * scale));
+    const tctx = tmp.getContext("2d")!;
+    tctx.imageSmoothingEnabled = true;
+    tctx.imageSmoothingQuality = "high";
+    tctx.drawImage(src, 0, 0, tmp.width, tmp.height);
+
+    const out = document.createElement("canvas");
+    out.width = src.width;
+    out.height = src.height;
+    const octx = out.getContext("2d")!;
+    octx.filter = `blur(${Math.max(4, intensity / 2)}px)`;
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = "high";
+    octx.drawImage(tmp, 0, 0, out.width, out.height);
+    return out;
+  };
+
+  const renderPixelLayer = (
+    src: HTMLCanvasElement,
+    intensity: number,
+  ): HTMLCanvasElement => {
+    // intensity controls block size in CSS pixels of the source canvas
+    const block = Math.max(6, Math.round(intensity));
+    const cols = Math.ceil(src.width / block);
+    const rows = Math.ceil(src.height / block);
+
+    // downscale to one pixel per block (averages colors)
+    const tmp = document.createElement("canvas");
+    tmp.width = cols;
+    tmp.height = rows;
+    const tctx = tmp.getContext("2d")!;
+    tctx.imageSmoothingEnabled = true;
+    tctx.imageSmoothingQuality = "high";
+    tctx.drawImage(src, 0, 0, cols, rows);
+
+    // upscale aligned to grid, no smoothing -> chunky blocks
+    const out = document.createElement("canvas");
+    out.width = src.width;
+    out.height = src.height;
+    const octx = out.getContext("2d")!;
+    octx.imageSmoothingEnabled = false;
+    octx.drawImage(tmp, 0, 0, cols * block, rows * block);
+    return out;
+  };
+
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !image) return;
@@ -45,68 +133,95 @@ export function FaceBlur() {
     canvas.height = image.height;
     ctx.drawImage(image, 0, 0);
 
+    // base snapshot for sampling (so effects sample the original image, not stacked effects)
+    const base = document.createElement("canvas");
+    base.width = canvas.width;
+    base.height = canvas.height;
+    base.getContext("2d")!.drawImage(image, 0, 0);
+
     const all = drawing ? [...regions, drawing] : regions;
     for (const r of all) {
-      const x = Math.min(r.x, r.x + r.w);
-      const y = Math.min(r.y, r.y + r.h);
-      const w = Math.abs(r.w);
-      const h = Math.abs(r.h);
-      if (w < 2 || h < 2) continue;
+      ctx.save();
+      applyClip(ctx, r);
 
       if (r.mode === "black") {
         ctx.fillStyle = "#000";
-        ctx.fillRect(x, y, w, h);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       } else if (r.mode === "pixelate") {
-        const size = Math.max(2, Math.round((Math.min(w, h) / 100) * r.intensity));
-        const tmp = document.createElement("canvas");
-        const tw = Math.max(1, Math.floor(w / size));
-        const th = Math.max(1, Math.floor(h / size));
-        tmp.width = tw;
-        tmp.height = th;
-        const tctx = tmp.getContext("2d")!;
-        tctx.imageSmoothingEnabled = false;
-        tctx.drawImage(canvas, x, y, w, h, 0, 0, tw, th);
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(tmp, 0, 0, tw, th, x, y, w, h);
-        ctx.imageSmoothingEnabled = true;
+        const layer = renderPixelLayer(base, r.intensity);
+        ctx.drawImage(layer, 0, 0);
       } else {
-        const tmp = document.createElement("canvas");
-        tmp.width = w;
-        tmp.height = h;
-        const tctx = tmp.getContext("2d")!;
-        tctx.filter = `blur(${r.intensity}px)`;
-        tctx.drawImage(canvas, x, y, w, h, 0, 0, w, h);
-        ctx.drawImage(tmp, x, y);
+        const layer = renderBlurLayer(base, r.intensity);
+        ctx.drawImage(layer, 0, 0);
       }
+      ctx.restore();
     }
   }, [image, regions, drawing]);
 
-  useEffect(() => { render(); }, [render]);
+  useEffect(() => {
+    render();
+  }, [render]);
 
   const getPos = (e: React.PointerEvent) => {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
   };
 
   const onDown = (e: React.PointerEvent) => {
     if (!image) return;
     (e.target as Element).setPointerCapture(e.pointerId);
     const p = getPos(e);
-    setDrawing({ x: p.x, y: p.y, w: 0, h: 0, mode, intensity });
+    if (shape === "rect") {
+      setDrawing({ kind: "rect", x: p.x, y: p.y, w: 0, h: 0, mode, intensity });
+    } else {
+      setDrawing({
+        kind: "brush",
+        points: [p],
+        size: brushSize,
+        mode,
+        intensity,
+      });
+    }
   };
 
   const onMove = (e: React.PointerEvent) => {
     if (!drawing) return;
     const p = getPos(e);
-    setDrawing({ ...drawing, w: p.x - drawing.x, h: p.y - drawing.y });
+    if (drawing.kind === "rect") {
+      setDrawing({ ...drawing, w: p.x - drawing.x, h: p.y - drawing.y });
+    } else {
+      // sample densely so the stroke is continuous
+      const last = drawing.points[drawing.points.length - 1];
+      const dx = p.x - last.x;
+      const dy = p.y - last.y;
+      const dist = Math.hypot(dx, dy);
+      const step = Math.max(2, drawing.size / 6);
+      const pts = [...drawing.points];
+      if (dist > step) {
+        const n = Math.floor(dist / step);
+        for (let i = 1; i <= n; i++) {
+          pts.push({ x: last.x + (dx * i) / n, y: last.y + (dy * i) / n });
+        }
+      } else {
+        pts.push(p);
+      }
+      setDrawing({ ...drawing, points: pts });
+    }
   };
 
   const onUp = () => {
     if (!drawing) return;
-    if (Math.abs(drawing.w) > 4 && Math.abs(drawing.h) > 4) {
+    if (drawing.kind === "rect") {
+      if (Math.abs(drawing.w) > 4 && Math.abs(drawing.h) > 4) {
+        setRegions((r) => [...r, drawing]);
+      }
+    } else if (drawing.points.length > 0) {
       setRegions((r) => [...r, drawing]);
     }
     setDrawing(null);
@@ -129,25 +244,44 @@ export function FaceBlur() {
       <div className="space-y-5 bg-card/60 backdrop-blur border border-border rounded-2xl p-5">
         {!image ? (
           <label
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragLeave={() => setDragOver(false)}
             onDrop={onDrop}
             className={`flex flex-col items-center justify-center gap-2 aspect-square w-full rounded-xl border-2 border-dashed cursor-pointer transition ${
-              dragOver ? "border-primary bg-primary/10" : "border-border bg-background/40 hover:border-primary/60"
+              dragOver
+                ? "border-primary bg-primary/10"
+                : "border-border bg-background/40 hover:border-primary/60"
             }`}
           >
-            <input type="file" accept="image/*" onChange={onFile} className="hidden" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onFile}
+              className="hidden"
+            />
             <div className="text-5xl">🫥</div>
-            <p className="text-sm font-medium text-foreground">Húzd ide a képet</p>
-            <p className="text-xs text-muted-foreground">vagy kattints a tallózáshoz</p>
+            <p className="text-sm font-medium text-foreground">
+              Húzd ide a képet
+            </p>
+            <p className="text-xs text-muted-foreground">
+              vagy kattints a tallózáshoz
+            </p>
           </label>
         ) : (
           <div className="space-y-2">
             <div className="text-xs text-muted-foreground bg-background/40 border border-border rounded-lg p-3 leading-relaxed">
-              Rajzolj téglalapot a képen az arc vagy bármilyen részlet kitakarásához.
+              {shape === "brush"
+                ? "Fess a képen, mint egy ecsettel — a kör méretét állítsd be lent."
+                : "Rajzolj téglalapot a kitakarni kívánt részre."}
             </div>
             <button
-              onClick={() => { setImage(null); setRegions([]); }}
+              onClick={() => {
+                setImage(null);
+                setRegions([]);
+              }}
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
               Másik kép
@@ -156,13 +290,44 @@ export function FaceBlur() {
         )}
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Eszköz</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
+            Alakzat
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {(
+              [
+                { id: "brush", label: "Ecset (kör)", icon: "⚪" },
+                { id: "rect", label: "Téglalap", icon: "▭" },
+              ] as const
+            ).map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setShape(s.id)}
+                className={`py-2 rounded-md text-xs font-semibold border transition ${
+                  shape === s.id
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background/60 border-input hover:bg-accent"
+                }`}
+              >
+                <div className="text-base">{s.icon}</div>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
+            Eszköz
+          </label>
           <div className="grid grid-cols-3 gap-2">
-            {([
-              { id: "blur", label: "Homály", icon: "💨" },
-              { id: "pixelate", label: "Pixel", icon: "🔲" },
-              { id: "black", label: "Sáv", icon: "⬛" },
-            ] as const).map((m) => (
+            {(
+              [
+                { id: "blur", label: "Homály", icon: "💨" },
+                { id: "pixelate", label: "Pixel", icon: "🔲" },
+                { id: "black", label: "Sáv", icon: "⬛" },
+              ] as const
+            ).map((m) => (
               <button
                 key={m.id}
                 onClick={() => setMode(m.id)}
@@ -179,16 +344,37 @@ export function FaceBlur() {
           </div>
         </div>
 
+        {shape === "brush" && (
+          <div>
+            <div className="flex justify-between items-baseline mb-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Ecset méret
+              </label>
+              <span className="text-sm font-mono">{brushSize}px</span>
+            </div>
+            <input
+              type="range"
+              min={10}
+              max={300}
+              value={brushSize}
+              onChange={(e) => setBrushSize(Number(e.target.value))}
+              className="w-full accent-[oklch(0.7_0.25_330)]"
+            />
+          </div>
+        )}
+
         {mode !== "black" && (
           <div>
             <div className="flex justify-between items-baseline mb-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Erősség</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {mode === "blur" ? "Homály erőssége" : "Pixel méret"}
+              </label>
               <span className="text-sm font-mono">{intensity}</span>
             </div>
             <input
               type="range"
-              min={2}
-              max={60}
+              min={mode === "blur" ? 10 : 8}
+              max={mode === "blur" ? 120 : 80}
               value={intensity}
               onChange={(e) => setIntensity(Number(e.target.value))}
               className="w-full accent-[oklch(0.7_0.25_330)]"
@@ -222,7 +408,7 @@ export function FaceBlur() {
         </button>
       </div>
 
-      <div ref={containerRef} className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
+      <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
         {image ? (
           <canvas
             ref={canvasRef}
@@ -233,7 +419,9 @@ export function FaceBlur() {
             className="max-w-full max-h-[75vh] object-contain rounded-md shadow-2xl cursor-crosshair touch-none"
           />
         ) : (
-          <p className="text-muted-foreground text-sm">A kép feltöltése után itt jelenik meg az előnézet</p>
+          <p className="text-muted-foreground text-sm">
+            A kép feltöltése után itt jelenik meg az előnézet
+          </p>
         )}
       </div>
     </div>
