@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
+import { FaceBlur } from "@/components/FaceBlur";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-type Tab = "home" | "meme" | "image";
+type Tab = "home" | "meme" | "image" | "blur";
 
 const tools = [
   {
@@ -31,11 +32,11 @@ const tools = [
     ready: true,
   },
   {
-    id: "soon2",
-    name: "Színpaletta",
-    icon: "🎨",
-    desc: "Hamarosan.",
-    ready: false,
+    id: "blur" as const,
+    name: "Arc kitakaró",
+    icon: "🫥",
+    desc: "Homályosítsd, pixelezd vagy takard ki az arcokat a képen.",
+    ready: true,
   },
 ];
 
@@ -54,6 +55,7 @@ function Home() {
             <TabBtn active={tab === "home"} onClick={() => setTab("home")}>Home</TabBtn>
             <TabBtn active={tab === "meme"} onClick={() => setTab("meme")}>Mémgenerátor</TabBtn>
             <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
+            <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
           </nav>
         </div>
       </header>
@@ -76,6 +78,15 @@ function Home() {
             </h2>
             <p className="text-muted-foreground mb-6">Tömöríts pontos méretre vagy állíts be új felbontást.</p>
             <ImageCompressor />
+          </section>
+        ) : null}
+        {tab === "blur" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Arc kitakaró</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">Rajzolj téglalapot a kitakarni kívánt részekre.</p>
+            <FaceBlur />
           </section>
         ) : null}
       </main>
