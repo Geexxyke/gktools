@@ -8,11 +8,37 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "GK Tools — Kreatív eszközök egy helyen" },
-      { name: "description", content: "Mémgenerátor, képtömörítő és további kreatív online eszközök." },
+      { name: "description", content: "Mémgenerátor, képtömörítő és arc kitakaró — gyors, böngészőből futó kreatív online eszközök egy helyen." },
+      { property: "og:url", content: "https://gktools.lovable.app/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://gktools.lovable.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "GK Tools",
+          url: "https://gktools.lovable.app/",
+          description: "Kreatív online eszközök gyűjteménye: mémgenerátor, képtömörítő, arc kitakaró.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "GK Tools",
+          url: "https://gktools.lovable.app/",
+        }),
+      },
     ],
   }),
   component: Home,
 });
+
 
 type Tab = "home" | "meme" | "image" | "blur";
 
