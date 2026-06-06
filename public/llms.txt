@@ -1,0 +1,9 @@
+# GK Tools
+
+> Ingyenes, böngészőből futó kreatív online eszközök gyűjteménye — mémgenerátor, képtömörítő és arc kitakaró.
+
+GK Tools egy magyar nyelvű, ingyenes eszközgyűjtemény. Minden eszköz a felhasználó böngészőjében fut, feltöltés nélkül.
+
+## Pages
+
+- [Kezdőlap](/): Eszközök áttekintése — mémgenerátor, képtömörítő, arc kitakaró.
