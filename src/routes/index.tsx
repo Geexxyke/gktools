@@ -143,7 +143,7 @@ function HomeView({ onPick }: { onPick: (t: Tab) => void }) {
             className="group text-left p-6 rounded-2xl border border-border bg-card/60 backdrop-blur hover:border-primary/60 hover:shadow-[0_0_40px_-10px_oklch(0.7_0.25_330_/_0.6)] transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <div className="text-4xl mb-3">{t.icon}</div>
-            <h3 className="text-lg font-bold mb-1 group-hover:text-rgb transition">{t.name}</h3>
+            <h2 className="text-lg font-bold mb-1 group-hover:text-rgb transition">{t.name}</h2>
             <p className="text-sm text-muted-foreground">{t.desc}</p>
             {!t.ready && (
               <span className="inline-block mt-3 text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-muted text-muted-foreground">Soon</span>
