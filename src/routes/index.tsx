@@ -64,12 +64,6 @@ const tools = [
     icon: "🫥",
     desc: "Homályosítsd, pixelezd vagy takard ki az arcokat a képen.",
     ready: true,
-  {
-    id: "blur" as const,
-    name: "Arc kitakaró",
-    icon: "🫥",
-    desc: "Homályosítsd, pixelezd vagy takard ki az arcokat a képen.",
-    ready: true,
   },
   {
     id: "video" as const,
