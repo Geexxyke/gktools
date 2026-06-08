@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
 import { FaceBlur } from "@/components/FaceBlur";
+import { VideoEditor } from "@/components/VideoEditor";
 
 export const Route = createFileRoute("/")({
   head: () => ({
