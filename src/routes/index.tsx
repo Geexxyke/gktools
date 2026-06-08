@@ -90,6 +90,7 @@ function Home() {
             <TabBtn active={tab === "meme"} onClick={() => setTab("meme")}>Mémgenerátor</TabBtn>
             <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
             <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
+            <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
           </nav>
         </div>
       </header>
