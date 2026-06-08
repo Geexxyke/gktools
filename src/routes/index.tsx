@@ -41,7 +41,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur";
+type Tab = "home" | "meme" | "image" | "blur" | "video";
 
 const tools = [
   {
