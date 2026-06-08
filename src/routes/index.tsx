@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
 import { FaceBlur } from "@/components/FaceBlur";
+import { VideoEditor } from "@/components/VideoEditor";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur";
+type Tab = "home" | "meme" | "image" | "blur" | "video";
 
 const tools = [
   {
@@ -64,6 +65,13 @@ const tools = [
     desc: "Homályosítsd, pixelezd vagy takard ki az arcokat a képen.",
     ready: true,
   },
+  {
+    id: "video" as const,
+    name: "Videó vágó + smart mute",
+    icon: "🎬",
+    desc: "Vágd, némítsd a videót — és AI-jal némíttasd az összes hasonló hangot.",
+    ready: true,
+  },
 ];
 
 function Home() {
@@ -82,6 +90,7 @@ function Home() {
             <TabBtn active={tab === "meme"} onClick={() => setTab("meme")}>Mémgenerátor</TabBtn>
             <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
             <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
+            <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
           </nav>
         </div>
       </header>
@@ -113,6 +122,17 @@ function Home() {
             </h2>
             <p className="text-muted-foreground mb-6">Rajzolj téglalapot a kitakarni kívánt részekre.</p>
             <FaceBlur />
+          </section>
+        ) : null}
+        {tab === "video" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Videó vágó + smart mute</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Vágd a videót, jelölj ki némítandó részeket, majd az AI megkeresi és lenémítja az összes hasonló hangot.
+            </p>
+            <VideoEditor />
           </section>
         ) : null}
       </main>
