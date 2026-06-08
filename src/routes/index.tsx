@@ -124,6 +124,17 @@ function Home() {
             <FaceBlur />
           </section>
         ) : null}
+        {tab === "video" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Videó vágó + smart mute</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Vágd a videót, jelölj ki némítandó részeket, majd az AI megkeresi és lenémítja az összes hasonló hangot.
+            </p>
+            <VideoEditor />
+          </section>
+        ) : null}
       </main>
     </div>
   );
