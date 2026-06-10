@@ -418,6 +418,7 @@ export function VideoEditor() {
     const ff = new FFmpeg();
     ff.on("progress", ({ progress: p }: any) => setProgress(Math.round((p || 0) * 100)));
     const bases = [
+      "/ffmpeg",
       "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd",
       "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd",
     ];
@@ -425,8 +426,13 @@ export function VideoEditor() {
     let lastErr: any = null;
     for (const base of bases) {
       try {
-        const coreURL = await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript");
-        const wasmURL = await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm");
+        const isLocal = base.startsWith("/");
+        const coreURL = isLocal
+          ? `${base}/ffmpeg-core.js`
+          : await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript");
+        const wasmURL = isLocal
+          ? `${base}/ffmpeg-core.wasm`
+          : await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm");
         await ff.load({ coreURL, wasmURL });
         loaded = true;
         break;
