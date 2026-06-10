@@ -417,11 +417,25 @@ export function VideoEditor() {
     const { toBlobURL } = await import("@ffmpeg/util");
     const ff = new FFmpeg();
     ff.on("progress", ({ progress: p }: any) => setProgress(Math.round((p || 0) * 100)));
-    const base = "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd";
-    await ff.load({
-      coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm"),
-    });
+    const bases = [
+      "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd",
+      "https://unpkg.com/@ffmpeg/core@0.12.10/dist/umd",
+    ];
+    let loaded = false;
+    let lastErr: any = null;
+    for (const base of bases) {
+      try {
+        const coreURL = await toBlobURL(`${base}/ffmpeg-core.js`, "text/javascript");
+        const wasmURL = await toBlobURL(`${base}/ffmpeg-core.wasm`, "application/wasm");
+        await ff.load({ coreURL, wasmURL });
+        loaded = true;
+        break;
+      } catch (e) {
+        lastErr = e;
+        console.warn("FFmpeg load failed from", base, e);
+      }
+    }
+    if (!loaded) throw new Error("FFmpeg betöltési hiba: " + (lastErr?.message || lastErr));
     ffmpegRef.current = ff;
     setStatus("");
     return ff;
