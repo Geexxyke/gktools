@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import GIF from "gif.js";
-import { parseGIF, decompressFrames } from "gifuct-js";
+import gifuct from "gifuct-js";
+const { parseGIF, decompressFrames } = gifuct as any;
 
 type Mode = "compress" | "resize";
 type ResizeFormat = "png" | "jpg" | "gif";
