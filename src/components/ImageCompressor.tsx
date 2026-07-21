@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import GIF from "gif.js";
+import { parseGIF, decompressFrames } from "gifuct-js";
 
 type Mode = "compress" | "resize";
+type ResizeFormat = "png" | "jpg" | "gif";
 
 export function ImageCompressor() {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -20,12 +23,19 @@ export function ImageCompressor() {
   const [width, setWidth] = useState(800);
   const [height, setHeight] = useState(600);
   const [lockRatio, setLockRatio] = useState(true);
-  const [resizeFormat, setResizeFormat] = useState<"png" | "jpg">("png");
+  const [resizeFormat, setResizeFormat] = useState<ResizeFormat>("png");
 
   const ratioRef = useRef(1);
+  const sourceFileRef = useRef<File | null>(null);
+  const isGifRef = useRef(false);
+  const [isGif, setIsGif] = useState(false);
 
   const loadFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
+    const gif = file.type === "image/gif" || /\.gif$/i.test(file.name);
+    sourceFileRef.current = file;
+    isGifRef.current = gif;
+    setIsGif(gif);
     const img = new Image();
     img.onload = () => {
       setImage(img);
@@ -37,6 +47,7 @@ export function ImageCompressor() {
     setFileName(file.name.replace(/\.[^.]+$/, "") || "kep");
     setOrigSize(file.size);
     setResultUrl(null);
+    if (gif) setResizeFormat("gif");
   }, []);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,14 +117,95 @@ export function ImageCompressor() {
     }
   };
 
+  const resizeGif = async (targetW: number, targetH: number): Promise<Blob> => {
+    const file = sourceFileRef.current!;
+    const buf = await file.arrayBuffer();
+    const parsed = parseGIF(buf);
+    const frames = decompressFrames(parsed, true);
+    const srcW = (parsed as any).lsd.width;
+    const srcH = (parsed as any).lsd.height;
+
+    // Composite each frame respecting disposal onto a full-size canvas
+    const full = document.createElement("canvas");
+    full.width = srcW; full.height = srcH;
+    const fctx = full.getContext("2d")!;
+    const patchCanvas = document.createElement("canvas");
+    const pctx = patchCanvas.getContext("2d")!;
+
+    const out = document.createElement("canvas");
+    out.width = targetW; out.height = targetH;
+    const octx = out.getContext("2d")!;
+    octx.imageSmoothingEnabled = true;
+    octx.imageSmoothingQuality = "high";
+
+    const gif = new GIF({
+      workers: 2,
+      quality: 10,
+      width: targetW,
+      height: targetH,
+      workerScript: "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js",
+    });
+
+    let prevImageData: ImageData | null = null;
+    for (const f of frames) {
+      const { width: fw, height: fh, top, left } = f.dims;
+      if (f.disposalType === 3 && prevImageData) {
+        fctx.putImageData(prevImageData, 0, 0);
+      } else if (f.disposalType === 2) {
+        fctx.clearRect(left, top, fw, fh);
+      }
+      if (f.disposalType === 3) {
+        prevImageData = fctx.getImageData(0, 0, srcW, srcH);
+      }
+      patchCanvas.width = fw; patchCanvas.height = fh;
+      const imgData = pctx.createImageData(fw, fh);
+      imgData.data.set(f.patch);
+      pctx.putImageData(imgData, 0, 0);
+      fctx.drawImage(patchCanvas, left, top);
+
+      octx.clearRect(0, 0, targetW, targetH);
+      octx.drawImage(full, 0, 0, targetW, targetH);
+      gif.addFrame(octx.getImageData(0, 0, targetW, targetH), { delay: f.delay || 100, copy: true });
+    }
+
+    return new Promise<Blob>((resolve, reject) => {
+      gif.on("finished", (b: Blob) => resolve(b));
+      gif.on("abort", () => reject(new Error("gif aborted")));
+      gif.render();
+    });
+  };
+
   const handleResize = async () => {
     if (!image) return;
     setBusy(true);
     setResultUrl(null);
     try {
-      const canvas = drawToCanvas(width, height);
-      const type = resizeFormat === "png" ? "image/png" : "image/jpeg";
-      const blob = await canvasToBlob(canvas, type, resizeFormat === "jpg" ? 0.92 : undefined);
+      let blob: Blob;
+      const w = Math.max(1, Math.round(width));
+      const h = Math.max(1, Math.round(height));
+      if (resizeFormat === "gif") {
+        if (!isGifRef.current) {
+          // Static image → single-frame GIF
+          const canvas = drawToCanvas(w, h);
+          const ctx = canvas.getContext("2d")!;
+          const gif = new GIF({
+            workers: 1, quality: 10, width: w, height: h,
+            workerScript: "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js",
+          });
+          gif.addFrame(ctx.getImageData(0, 0, w, h), { delay: 100, copy: true });
+          blob = await new Promise<Blob>((res, rej) => {
+            gif.on("finished", (b: Blob) => res(b));
+            gif.on("abort", () => rej(new Error("gif aborted")));
+            gif.render();
+          });
+        } else {
+          blob = await resizeGif(w, h);
+        }
+      } else {
+        const canvas = drawToCanvas(w, h);
+        const type = resizeFormat === "png" ? "image/png" : "image/jpeg";
+        blob = await canvasToBlob(canvas, type, resizeFormat === "jpg" ? 0.92 : undefined);
+      }
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
       setResultSize(blob.size);
@@ -231,7 +323,7 @@ export function ImageCompressor() {
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Formátum</label>
               <div className="flex gap-2">
-                {(["png", "jpg"] as const).map((f) => (
+                {(["png", "jpg", "gif"] as const).map((f) => (
                   <button
                     key={f}
                     onClick={() => setResizeFormat(f)}
@@ -241,6 +333,9 @@ export function ImageCompressor() {
                   >{f.toUpperCase()}</button>
                 ))}
               </div>
+              {isGif && resizeFormat !== "gif" && (
+                <p className="text-[11px] text-amber-400/80 mt-1.5">Animált GIF-nél csak GIF formátum tartja meg az animációt.</p>
+              )}
             </div>
             <button
               onClick={handleResize}
