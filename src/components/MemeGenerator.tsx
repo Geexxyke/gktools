@@ -100,7 +100,7 @@ export function MemeGenerator() {
 
     const GIF = (await import("gif.js")).default;
     const workerBlob = new Blob(
-      [`importScripts("https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js");`],
+      [`importScripts("/gif/gif.worker.js");`],
       { type: "application/javascript" },
     );
     const workerUrl = URL.createObjectURL(workerBlob);

@@ -144,7 +144,7 @@ export function ImageCompressor() {
       quality: 10,
       width: targetW,
       height: targetH,
-      workerScript: "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js",
+      workerScript: "/gif/gif.worker.js",
     });
 
     let prevImageData: ImageData | null = null;
@@ -191,7 +191,7 @@ export function ImageCompressor() {
           const ctx = canvas.getContext("2d")!;
           const gif = new GIF({
             workers: 1, quality: 10, width: w, height: h,
-            workerScript: "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js",
+            workerScript: "/gif/gif.worker.js",
           });
           gif.addFrame(ctx.getImageData(0, 0, w, h), { delay: 100, copy: true });
           blob = await new Promise<Blob>((res, rej) => {
