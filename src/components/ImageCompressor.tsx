@@ -323,7 +323,7 @@ export function ImageCompressor() {
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Formátum</label>
               <div className="flex gap-2">
-                {(["png", "jpg"] as const).map((f) => (
+                {(["png", "jpg", "gif"] as const).map((f) => (
                   <button
                     key={f}
                     onClick={() => setResizeFormat(f)}
@@ -333,6 +333,9 @@ export function ImageCompressor() {
                   >{f.toUpperCase()}</button>
                 ))}
               </div>
+              {isGif && resizeFormat !== "gif" && (
+                <p className="text-[11px] text-amber-400/80 mt-1.5">Animált GIF-nél csak GIF formátum tartja meg az animációt.</p>
+              )}
             </div>
             <button
               onClick={handleResize}
