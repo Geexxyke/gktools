@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import GIF from "gif.js";
+import { parseGIF, decompressFrames } from "gifuct-js";
 
 type Mode = "compress" | "resize";
+type ResizeFormat = "png" | "jpg" | "gif";
 
 export function ImageCompressor() {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
