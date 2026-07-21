@@ -23,12 +23,19 @@ export function ImageCompressor() {
   const [width, setWidth] = useState(800);
   const [height, setHeight] = useState(600);
   const [lockRatio, setLockRatio] = useState(true);
-  const [resizeFormat, setResizeFormat] = useState<"png" | "jpg">("png");
+  const [resizeFormat, setResizeFormat] = useState<ResizeFormat>("png");
 
   const ratioRef = useRef(1);
+  const sourceFileRef = useRef<File | null>(null);
+  const isGifRef = useRef(false);
+  const [isGif, setIsGif] = useState(false);
 
   const loadFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
+    const gif = file.type === "image/gif" || /\.gif$/i.test(file.name);
+    sourceFileRef.current = file;
+    isGifRef.current = gif;
+    setIsGif(gif);
     const img = new Image();
     img.onload = () => {
       setImage(img);
@@ -40,6 +47,7 @@ export function ImageCompressor() {
     setFileName(file.name.replace(/\.[^.]+$/, "") || "kep");
     setOrigSize(file.size);
     setResultUrl(null);
+    if (gif) setResizeFormat("gif");
   }, []);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
