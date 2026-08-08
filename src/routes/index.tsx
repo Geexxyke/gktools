@@ -4,6 +4,7 @@ import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
 import { FaceBlur } from "@/components/FaceBlur";
 import { VideoEditor } from "@/components/VideoEditor";
+import { FileZipper } from "@/components/FileZipper";
 
 export const Route = createFileRoute("/")({
   head: () => ({
