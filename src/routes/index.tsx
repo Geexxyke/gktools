@@ -5,6 +5,7 @@ import { ImageCompressor } from "@/components/ImageCompressor";
 import { FaceBlur } from "@/components/FaceBlur";
 import { VideoEditor } from "@/components/VideoEditor";
 import { FileZipper } from "@/components/FileZipper";
+import { BgRemover } from "@/components/BgRemover";
 
 export const Route = createFileRoute("/")({
   head: () => ({
