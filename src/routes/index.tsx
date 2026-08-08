@@ -81,6 +81,13 @@ const tools = [
     desc: "Húzz be több fájlt, csomagold maximálisan tömörített ZIP-be cél mérettel.",
     ready: true,
   },
+  {
+    id: "bg" as const,
+    name: "Háttér eltávolító + tükrözés",
+    icon: "✂️",
+    desc: "Vágd ki a hátteret átlátszó PNG-be, és tükrözd a képet vízszintesen vagy függőlegesen.",
+    ready: true,
+  },
 ];
 
 function Home() {
