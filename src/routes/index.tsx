@@ -43,7 +43,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip";
+type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip" | "bg";
 
 const tools = [
   {
