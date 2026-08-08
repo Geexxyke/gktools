@@ -4,6 +4,7 @@ import { MemeGenerator } from "@/components/MemeGenerator";
 import { ImageCompressor } from "@/components/ImageCompressor";
 import { FaceBlur } from "@/components/FaceBlur";
 import { VideoEditor } from "@/components/VideoEditor";
+import { FileZipper } from "@/components/FileZipper";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur" | "video";
+type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip";
 
 const tools = [
   {
@@ -72,6 +73,13 @@ const tools = [
     desc: "Vágd, némítsd a videót — és AI-jal némíttasd az összes hasonló hangot.",
     ready: true,
   },
+  {
+    id: "zip" as const,
+    name: "Fájl tömörítő (ZIP)",
+    icon: "🗂️",
+    desc: "Húzz be több fájlt, csomagold maximálisan tömörített ZIP-be cél mérettel.",
+    ready: true,
+  },
 ];
 
 function Home() {
@@ -91,6 +99,7 @@ function Home() {
             <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
             <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
             <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
+            <TabBtn active={tab === "zip"} onClick={() => setTab("zip")}>ZIP</TabBtn>
           </nav>
         </div>
       </header>
@@ -133,6 +142,17 @@ function Home() {
               Vágd a videót, jelölj ki némítandó részeket, majd az AI megkeresi és lenémítja az összes hasonló hangot.
             </p>
             <VideoEditor />
+          </section>
+        ) : null}
+        {tab === "zip" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Fájl tömörítő (ZIP)</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Húzz be több fájlt, és készíts belőlük maximálisan tömörített ZIP-et — opcionális cél mérettel.
+            </p>
+            <FileZipper />
           </section>
         ) : null}
       </main>
