@@ -164,6 +164,17 @@ function Home() {
             <FileZipper />
           </section>
         ) : null}
+        {tab === "bg" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Háttér eltávolító + tükrözés</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Vágd ki a hátteret átlátszó PNG-be minőségvesztés nélkül, és tükrözd a képet, ha más irányba kell nézzen.
+            </p>
+            <BgRemover />
+          </section>
+        ) : null}
       </main>
     </div>
   );
