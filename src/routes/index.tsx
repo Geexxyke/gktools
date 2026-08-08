@@ -73,6 +73,13 @@ const tools = [
     desc: "Vágd, némítsd a videót — és AI-jal némíttasd az összes hasonló hangot.",
     ready: true,
   },
+  {
+    id: "zip" as const,
+    name: "Fájl tömörítő (ZIP)",
+    icon: "🗂️",
+    desc: "Húzz be több fájlt, csomagold maximálisan tömörített ZIP-be cél mérettel.",
+    ready: true,
+  },
 ];
 
 function Home() {
