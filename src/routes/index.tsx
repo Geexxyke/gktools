@@ -144,6 +144,17 @@ function Home() {
             <VideoEditor />
           </section>
         ) : null}
+        {tab === "zip" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Fájl tömörítő (ZIP)</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Húzz be több fájlt, és készíts belőlük maximálisan tömörített ZIP-et — opcionális cél mérettel.
+            </p>
+            <FileZipper />
+          </section>
+        ) : null}
       </main>
     </div>
   );
