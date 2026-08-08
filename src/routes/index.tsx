@@ -99,6 +99,7 @@ function Home() {
             <TabBtn active={tab === "image"} onClick={() => setTab("image")}>Kép eszköz</TabBtn>
             <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
             <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
+            <TabBtn active={tab === "zip"} onClick={() => setTab("zip")}>ZIP</TabBtn>
           </nav>
         </div>
       </header>
