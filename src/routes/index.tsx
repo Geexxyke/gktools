@@ -108,6 +108,7 @@ function Home() {
             <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
             <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
             <TabBtn active={tab === "zip"} onClick={() => setTab("zip")}>ZIP</TabBtn>
+            <TabBtn active={tab === "bg"} onClick={() => setTab("bg")}>Háttér</TabBtn>
           </nav>
         </div>
       </header>
