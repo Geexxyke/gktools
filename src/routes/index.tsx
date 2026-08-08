@@ -5,6 +5,7 @@ import { ImageCompressor } from "@/components/ImageCompressor";
 import { FaceBlur } from "@/components/FaceBlur";
 import { VideoEditor } from "@/components/VideoEditor";
 import { FileZipper } from "@/components/FileZipper";
+import { BgRemover } from "@/components/BgRemover";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,7 +43,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip";
+type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip" | "bg";
 
 const tools = [
   {
@@ -80,6 +81,13 @@ const tools = [
     desc: "Húzz be több fájlt, csomagold maximálisan tömörített ZIP-be cél mérettel.",
     ready: true,
   },
+  {
+    id: "bg" as const,
+    name: "Háttér eltávolító + tükrözés",
+    icon: "✂️",
+    desc: "Vágd ki a hátteret átlátszó PNG-be, és tükrözd a képet vízszintesen vagy függőlegesen.",
+    ready: true,
+  },
 ];
 
 function Home() {
@@ -100,6 +108,7 @@ function Home() {
             <TabBtn active={tab === "blur"} onClick={() => setTab("blur")}>Arc kitakaró</TabBtn>
             <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
             <TabBtn active={tab === "zip"} onClick={() => setTab("zip")}>ZIP</TabBtn>
+            <TabBtn active={tab === "bg"} onClick={() => setTab("bg")}>Háttér</TabBtn>
           </nav>
         </div>
       </header>
@@ -153,6 +162,17 @@ function Home() {
               Húzz be több fájlt, és készíts belőlük maximálisan tömörített ZIP-et — opcionális cél mérettel.
             </p>
             <FileZipper />
+          </section>
+        ) : null}
+        {tab === "bg" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Háttér eltávolító + tükrözés</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Vágd ki a hátteret átlátszó PNG-be minőségvesztés nélkül, és tükrözd a képet, ha más irányba kell nézzen.
+            </p>
+            <BgRemover />
           </section>
         ) : null}
       </main>
