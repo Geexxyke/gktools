@@ -117,6 +117,7 @@ function Home() {
             <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
             <TabBtn active={tab === "zip"} onClick={() => setTab("zip")}>ZIP</TabBtn>
             <TabBtn active={tab === "bg"} onClick={() => setTab("bg")}>Háttér</TabBtn>
+            <TabBtn active={tab === "convert"} onClick={() => setTab("convert")}>Konvertáló</TabBtn>
           </nav>
         </div>
       </header>
