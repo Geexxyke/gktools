@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip" | "bg";
+type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip" | "bg" | "convert";
 
 const tools = [
   {
