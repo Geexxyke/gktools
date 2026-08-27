@@ -6,6 +6,7 @@ import { FaceBlur } from "@/components/FaceBlur";
 import { VideoEditor } from "@/components/VideoEditor";
 import { FileZipper } from "@/components/FileZipper";
 import { BgRemover } from "@/components/BgRemover";
+import { FileConverter } from "@/components/FileConverter";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/")({
 });
 
 
-type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip" | "bg";
+type Tab = "home" | "meme" | "image" | "blur" | "video" | "zip" | "bg" | "convert";
 
 const tools = [
   {
@@ -88,6 +89,13 @@ const tools = [
     desc: "Vágd ki a hátteret átlátszó PNG-be, és tükrözd a képet vízszintesen vagy függőlegesen.",
     ready: true,
   },
+  {
+    id: "convert" as const,
+    name: "Fájl konvertáló",
+    icon: "🔄",
+    desc: "Konvertálj bármilyen képet GIF formátumba — méret és paletta beállítással.",
+    ready: true,
+  },
 ];
 
 function Home() {
@@ -109,6 +117,7 @@ function Home() {
             <TabBtn active={tab === "video"} onClick={() => setTab("video")}>Videó</TabBtn>
             <TabBtn active={tab === "zip"} onClick={() => setTab("zip")}>ZIP</TabBtn>
             <TabBtn active={tab === "bg"} onClick={() => setTab("bg")}>Háttér</TabBtn>
+            <TabBtn active={tab === "convert"} onClick={() => setTab("convert")}>Konvertáló</TabBtn>
           </nav>
         </div>
       </header>
@@ -173,6 +182,17 @@ function Home() {
               Vágd ki a hátteret átlátszó PNG-be minőségvesztés nélkül, és tükrözd a képet, ha más irányba kell nézzen.
             </p>
             <BgRemover />
+          </section>
+        ) : null}
+        {tab === "convert" ? (
+          <section>
+            <h2 className="text-3xl md:text-4xl font-black mb-1">
+              <span className="text-rgb">Fájl konvertáló</span>
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Tölts fel bármilyen képet (PNG, JPG, WEBP, BMP, SVG…) és konvertáld GIF formátumba.
+            </p>
+            <FileConverter />
           </section>
         ) : null}
       </main>
