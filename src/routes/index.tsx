@@ -6,6 +6,7 @@ import { FaceBlur } from "@/components/FaceBlur";
 import { VideoEditor } from "@/components/VideoEditor";
 import { FileZipper } from "@/components/FileZipper";
 import { BgRemover } from "@/components/BgRemover";
+import { FileConverter } from "@/components/FileConverter";
 
 export const Route = createFileRoute("/")({
   head: () => ({
