@@ -89,6 +89,13 @@ const tools = [
     desc: "Vágd ki a hátteret átlátszó PNG-be, és tükrözd a képet vízszintesen vagy függőlegesen.",
     ready: true,
   },
+  {
+    id: "convert" as const,
+    name: "Fájl konvertáló",
+    icon: "🔄",
+    desc: "Konvertálj bármilyen képet GIF formátumba — méret és paletta beállítással.",
+    ready: true,
+  },
 ];
 
 function Home() {
