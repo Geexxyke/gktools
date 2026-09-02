@@ -53,21 +53,21 @@ export function BgRemover() {
   const removeBg = async () => {
     if (!srcUrl) return;
     setBusy(true);
-    setStatus("Modell betöltése…");
+    setStatus("Loading model…");
     try {
       const { removeBackground } = await import("@imgly/background-removal");
       const blob = await removeBackground(srcUrl, {
         output: { format: "image/png", quality: 1 },
         progress: (key, current, total) => {
           const pct = total ? Math.round((current / total) * 100) : 0;
-          setStatus(`${key.startsWith("fetch") ? "Letöltés" : "Feldolgozás"}: ${pct}%`);
+          setStatus(`${key.startsWith("fetch") ? "Downloading" : "Processing"}: ${pct}%`);
         },
       });
       setCutUrl(URL.createObjectURL(blob));
       setUseCut(true);
-      setStatus("Kész — a háttér eltávolítva (PNG, átlátszó).");
+      setStatus("Done — background removed (transparent PNG).");
     } catch (e) {
-      setStatus("Hiba: " + (e instanceof Error ? e.message : String(e)));
+      setStatus("Error: " + (e instanceof Error ? e.message : String(e)));
     } finally {
       setBusy(false);
     }
@@ -116,9 +116,9 @@ export function BgRemover() {
                 if (f) loadFile(f);
               }}
             />
-            <div className="text-5xl">✂️</div>
-            <p className="text-sm font-medium text-foreground">Húzd ide a képet</p>
-            <p className="text-xs text-muted-foreground">vagy kattints a tallózáshoz</p>
+            
+            <p className="text-sm font-medium text-foreground">Drop an image here</p>
+            <p className="text-xs text-muted-foreground">or click to browse</p>
           </label>
         ) : (
           <button
@@ -129,20 +129,20 @@ export function BgRemover() {
             }}
             className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
           >
-            Másik kép
+            Replace image
           </button>
         )}
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
-            Háttér
+            Background
           </label>
           <button
             onClick={removeBg}
             disabled={!srcUrl || busy}
             className="w-full py-2.5 rounded-lg text-sm font-bold border border-primary bg-primary/15 hover:bg-primary/25 disabled:opacity-40"
           >
-            {busy ? "Dolgozom…" : "🪄 Háttér eltávolítása"}
+            {busy ? "Working…" : "Remove background"}
           </button>
           {cutUrl && (
             <div className="grid grid-cols-2 gap-2 mt-2">
@@ -152,7 +152,7 @@ export function BgRemover() {
                   !useCut ? "bg-primary text-primary-foreground border-primary" : "bg-background/60 border-input hover:bg-accent"
                 }`}
               >
-                Eredeti
+                Original
               </button>
               <button
                 onClick={() => setUseCut(true)}
@@ -160,7 +160,7 @@ export function BgRemover() {
                   useCut ? "bg-primary text-primary-foreground border-primary" : "bg-background/60 border-input hover:bg-accent"
                 }`}
               >
-                Háttér nélkül
+                Cutout
               </button>
             </div>
           )}
@@ -171,7 +171,7 @@ export function BgRemover() {
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
-            Tükrözés
+            Mirror
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -182,7 +182,7 @@ export function BgRemover() {
               }`}
             >
               <div className="text-base">⇄</div>
-              Vízszintes
+              Horizontal
             </button>
             <button
               onClick={() => setFlipY((v) => !v)}
@@ -192,20 +192,20 @@ export function BgRemover() {
               }`}
             >
               <div className="text-base">⇅</div>
-              Függőleges
+              Vertical
             </button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            A vízszintes tükrözéssel pl. a jobbra néző autó balra fog nézni.
+            Horizontal mirroring flips the subject’s facing direction.
           </p>
         </div>
 
         <button
           onClick={download}
           disabled={!img}
-          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
-          ⬇ Letöltés (PNG)
+          Download PNG
         </button>
       </div>
 
@@ -223,7 +223,7 @@ export function BgRemover() {
           />
         ) : (
           <p className="text-muted-foreground text-sm">
-            A kép feltöltése után itt jelenik meg az előnézet
+            Upload an image to see the preview here
           </p>
         )}
       </div>
