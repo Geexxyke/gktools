@@ -296,7 +296,7 @@ export function VideoEditor() {
   // ---- Smart mute (improved) ----
   const ensureFeatures = useCallback(async () => {
     if (featuresRef.current || !file) return featuresRef.current;
-    setStatus("Hangsáv elemzése…");
+    setStatus("Analyzing audio track…");
     const ab = await file.arrayBuffer();
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const buf = await ctx.decodeAudioData(ab.slice(0));
@@ -327,7 +327,7 @@ export function VideoEditor() {
       const endFrame = Math.min(nFrames, Math.ceil(seg.srcEnd / frameDur));
       const L = endFrame - startFrame;
       if (L < 4) {
-        setStatus("Túl rövid minta a kereséshez.");
+        setStatus("Sample too short for matching.");
         setTimeout(() => setStatus(""), 2000);
         return;
       }
@@ -372,7 +372,7 @@ export function VideoEditor() {
         picked.push({ start: st, end: en });
       }
       if (picked.length === 0) {
-        setStatus(`Nem találtam hasonlót (érzékenység ${sensitivity.toFixed(2)}).`);
+        setStatus(`No similar segments found (sensitivity ${sensitivity.toFixed(2)}).`);
         setTimeout(() => setStatus(""), 2500);
         return;
       }
@@ -402,7 +402,7 @@ export function VideoEditor() {
         return hit ? { ...s, muted: true } : s;
       });
       setSegments(next);
-      setStatus(`${picked.length} hasonló szakasz megtalálva és lenémítva.`);
+      setStatus(`${picked.length} similar segment(s) found and muted.`);
       setTimeout(() => setStatus(""), 2500);
     } finally {
       setAnalyzing(false);
@@ -412,7 +412,7 @@ export function VideoEditor() {
   // ---- FFmpeg render: concat segments with mutes ----
   const loadFfmpeg = async () => {
     if (ffmpegRef.current) return ffmpegRef.current;
-    setStatus("FFmpeg betöltése…");
+    setStatus("Loading FFmpeg…");
     const { FFmpeg } = await import("@ffmpeg/ffmpeg");
     const { toBlobURL } = await import("@ffmpeg/util");
     const ff = new FFmpeg();
@@ -441,7 +441,7 @@ export function VideoEditor() {
         console.warn("FFmpeg load failed from", base, e);
       }
     }
-    if (!loaded) throw new Error("FFmpeg betöltési hiba: " + (lastErr?.message || lastErr));
+    if (!loaded) throw new Error("FFmpeg loading error: " + (lastErr?.message || lastErr));
     ffmpegRef.current = ff;
     setStatus("");
     return ff;
@@ -455,7 +455,7 @@ export function VideoEditor() {
     try {
       const ff = await loadFfmpeg();
       const { fetchFile } = await import("@ffmpeg/util");
-      setStatus("Feltöltés FFmpeg-be…");
+      setStatus("Uploading to FFmpeg…");
       await ff.writeFile("in.mp4", await fetchFile(file));
 
       // Build filter_complex
@@ -502,10 +502,10 @@ export function VideoEditor() {
       const data = (await ff.readFile("out.mp4")) as Uint8Array;
       const blob = new Blob([data.buffer as ArrayBuffer], { type: "video/mp4" });
       setOutUrl(URL.createObjectURL(blob));
-      setStatus("Kész!");
+      setStatus("Done!");
     } catch (e: any) {
       console.error(e);
-      setStatus("Hiba: " + (e?.message || e));
+      setStatus("Error: " + (e?.message || e));
     } finally {
       setRendering(false);
     }
@@ -514,7 +514,7 @@ export function VideoEditor() {
   if (!file) {
     return (
       <div className="border-2 border-dashed border-border rounded-2xl p-12 text-center">
-        <p className="text-muted-foreground mb-4">Húzz be vagy válassz egy videót (MP4, WebM, MOV)…</p>
+        <p className="text-muted-foreground mb-4">Drag and drop or select a video (MP4, WebM, MOV)…</p>
         <input
           type="file"
           accept="video/*"
@@ -522,7 +522,7 @@ export function VideoEditor() {
           className="block mx-auto text-sm"
         />
         <p className="text-xs text-muted-foreground mt-4">
-          A feldolgozás teljesen a böngésződben fut, semmi sem kerül szerverre.
+          Processing runs entirely in your browser — nothing is uploaded to a server.
         </p>
       </div>
     );
@@ -542,15 +542,15 @@ export function VideoEditor() {
         <Button onClick={togglePlay} variant="secondary" size="sm">
           {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
         </Button>
-        <Button onClick={splitAtPlayhead} variant="default" size="sm" title="Vágás a lejátszófejnél (S)">
-          <Scissors className="w-4 h-4 mr-1" /> Vágás
+        <Button onClick={splitAtPlayhead} variant="default" size="sm" title="Split at playhead (S)">
+          <Scissors className="w-4 h-4 mr-1" /> Split
         </Button>
         <span className="text-sm text-muted-foreground tabular-nums">
           {virtualTime.toFixed(2)}s / {totalDuration.toFixed(2)}s
         </span>
         <div className="flex-1" />
         <span className="text-xs text-muted-foreground">
-          Eredeti: {srcDuration.toFixed(2)}s
+          Original: {srcDuration.toFixed(2)}s
         </span>
       </div>
 
@@ -570,7 +570,7 @@ export function VideoEditor() {
 
       {/* CapCut-style segment track */}
       <div className="rounded-xl border border-border p-2 bg-card/40">
-        <div className="text-xs text-muted-foreground mb-2 px-1">Idővonal — kattints egy klipre a kiválasztáshoz</div>
+        <div className="text-xs text-muted-foreground mb-2 px-1">Timeline — click a clip to select it</div>
         <div className="flex gap-1 overflow-x-auto pb-2 min-h-[72px]">
           {segments.map((s, i) => {
             const dur = s.srcEnd - s.srcStart;
@@ -609,19 +609,19 @@ export function VideoEditor() {
         return (
           <div className="rounded-lg border border-border p-3 flex flex-wrap items-center gap-2">
             <div className="text-sm font-semibold mr-2">
-              Klip #{segments.findIndex((x) => x.id === selectedId) + 1}
+              Clip #{segments.findIndex((x) => x.id === selectedId) + 1}
               <span className="text-muted-foreground ml-2 tabular-nums text-xs">
                 {s.srcStart.toFixed(2)}s → {s.srcEnd.toFixed(2)}s
               </span>
             </div>
             <Button size="sm" variant={s.muted ? "default" : "outline"} onClick={() => toggleMute(s.id)}>
               {s.muted ? <VolumeX className="w-4 h-4 mr-1" /> : <Volume2 className="w-4 h-4 mr-1" />}
-              {s.muted ? "Némítva" : "Némítás"}
+              {s.muted ? "Muted" : "Mute"}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, -1)} title="Balra mozgatás">
+            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, -1)} title="Move left">
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, 1)} title="Jobbra mozgatás">
+            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, 1)} title="Move right">
               <ArrowRight className="w-4 h-4" />
             </Button>
             <Button
@@ -629,13 +629,13 @@ export function VideoEditor() {
               variant="outline"
               disabled={analyzing}
               onClick={() => smartMuteFromSegment(s.id)}
-              title="Hasonló hangok keresése és némítása a teljes videóban"
+              title="Find and mute similar sounds across the video"
             >
-              <Plus className="w-4 h-4 mr-1" /> {analyzing ? "Elemzés…" : "AI: hasonlók némítása"}
+              <Plus className="w-4 h-4 mr-1" /> {analyzing ? "Analyzing…" : "AI: mute similar"}
             </Button>
             <div className="flex-1" />
             <Button size="sm" variant="destructive" onClick={() => removeSegment(s.id)}>
-              <Trash2 className="w-4 h-4 mr-1" /> Törlés
+              <Trash2 className="w-4 h-4 mr-1" /> Delete
             </Button>
           </div>
         );
@@ -644,7 +644,7 @@ export function VideoEditor() {
       {/* Sensitivity */}
       <div className="rounded-lg border border-border p-3">
         <div className="flex items-center justify-between text-sm mb-1">
-          <span>AI érzékenység (cosine küszöb)</span>
+          <span>AI sensitivity (cosine threshold)</span>
           <span className="text-muted-foreground tabular-nums">{sensitivity.toFixed(2)}</span>
         </div>
         <Slider
@@ -655,14 +655,14 @@ export function VideoEditor() {
           onValueChange={(v) => setSensitivity(v[0])}
         />
         <p className="text-xs text-muted-foreground mt-1">
-          Multi-band spektrális elemzés (FFT + 6 sáv + ZCR + spektrális centroid). Magasabb érték = szigorúbb találat.
+          Multi-band spectral analysis (FFT + 6 bands + ZCR + spectral centroid). Higher value = stricter matching.
         </p>
       </div>
 
       {/* Render */}
       <div className="flex flex-wrap items-center gap-3">
         <Button onClick={render} disabled={rendering || analyzing || segments.length === 0}>
-          {rendering ? "Renderelés…" : "🎬 MP4 exportálása"}
+          {rendering ? "Rendering…" : "Export MP4"}
         </Button>
         <Button
           variant="outline"
@@ -673,7 +673,7 @@ export function VideoEditor() {
             setSegments([]);
           }}
         >
-          Új videó
+          New video
         </Button>
         {status && <span className="text-sm text-muted-foreground">{status}</span>}
         {(rendering || progress > 0) && (
@@ -685,14 +685,14 @@ export function VideoEditor() {
 
       {outUrl && (
         <div className="rounded-xl border border-border p-4 space-y-3">
-          <div className="font-semibold">Eredmény</div>
+          <div className="font-semibold">Result</div>
           <video src={outUrl} controls className="w-full rounded-lg max-h-[50vh] bg-black" />
           <a
             href={outUrl}
             download="gktools-video.mp4"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold"
           >
-            ⬇ Letöltés (MP4)
+            Download (MP4)
           </a>
         </div>
       )}
