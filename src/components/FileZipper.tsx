@@ -117,7 +117,7 @@ export function FileZipper() {
     setHitTarget(null);
     try {
       const targetBytes = targetMb * 1024 * 1024;
-      setStatus("Tömörítés (maximum szint)…");
+      setStatus("Compressing (maximum level)…");
       // Yield so the spinner paints before the synchronous deflate work.
       await new Promise((r) => setTimeout(r, 30));
       let out = await zipOnce(null);
@@ -132,7 +132,7 @@ export function FileZipper() {
           { quality: 0.35, scale: 0.35 },
         ];
         for (let i = 0; i < passes.length; i++) {
-          setStatus(`Képek újratömörítése – ${i + 1}/${passes.length}. próba…`);
+          setStatus(`Recompressing images – attempt ${i + 1}/${passes.length}…`);
           await new Promise((r) => setTimeout(r, 20));
           const candidate = await zipOnce(passes[i]);
           out = candidate;
@@ -179,13 +179,13 @@ export function FileZipper() {
             className="hidden"
           />
           <div className="text-4xl">🗂️</div>
-          <p className="text-sm font-medium text-foreground">Húzd ide a fájlokat</p>
-          <p className="text-xs text-muted-foreground">vagy kattints a tallózáshoz (több fájl is)</p>
+          <p className="text-sm font-medium text-foreground">Drop your files here</p>
+          <p className="text-xs text-muted-foreground">or click to browse (multiple files supported)</p>
         </label>
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-muted-foreground">
-            ZIP fájl neve
+            ZIP file name
           </label>
           <div className="relative">
             <input
@@ -200,7 +200,7 @@ export function FileZipper() {
         <div className="space-y-2 rounded-xl border border-border bg-background/40 p-3">
           <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer">
             <input type="checkbox" checked={useTarget} onChange={(e) => setUseTarget(e.target.checked)} />
-            Cél méret megadása
+            Set a target size
           </label>
           {useTarget && (
             <>
@@ -221,13 +221,13 @@ export function FileZipper() {
                   className="mt-0.5"
                 />
                 <span>
-                  Ha nem fér bele, a képeket veszteségesen újratömöríti (JPEG) — csak így lehet valóban elérni a
-                  cél méretet.
+                  If it does not fit, images are recompressed lossily (JPEG) — that is the only way to truly hit the
+                  target size.
                 </span>
               </label>
               <p className="text-[11px] text-amber-400/80">
-                Dokumentumok, videók és már tömörített fájlok méretét veszteségmentesen nem lehet garantáltan
-                lecsökkenteni.
+                Documents, videos and already-compressed files cannot be guaranteed to shrink
+                losslessly.
               </p>
             </>
           )}
@@ -238,7 +238,7 @@ export function FileZipper() {
           disabled={!items.length || busy}
           className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
-          {busy ? "Tömörítés…" : "🗜️ ZIP készítése"}
+          {busy ? "Compressing…" : "Create ZIP"}
         </button>
         {status && <p className="text-xs text-muted-foreground text-center">{status}</p>}
       </div>
@@ -246,13 +246,13 @@ export function FileZipper() {
       <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex flex-col min-h-[400px] gap-4">
         {items.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center m-auto">
-            Tölts fel fájlokat a kezdéshez.
+            Upload files to get started.
           </p>
         ) : (
           <>
             <div className="flex items-baseline justify-between">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                {items.length} fájl
+                {items.length} files
               </h3>
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono text-muted-foreground">{fmtSize(origSize)}</span>
@@ -260,7 +260,7 @@ export function FileZipper() {
                   onClick={() => { setItems([]); setResultUrl(null); setHitTarget(null); }}
                   className="text-xs text-muted-foreground hover:text-foreground underline"
                 >
-                  Összes törlése
+                  Clear all
                 </button>
               </div>
             </div>
@@ -275,7 +275,7 @@ export function FileZipper() {
                   <span className="text-xs font-mono text-muted-foreground shrink-0">{fmtSize(it.file.size)}</span>
                   <button
                     onClick={() => removeItem(it.id)}
-                    aria-label={`${it.file.name} eltávolítása`}
+                    aria-label={`${it.file.name} remove`}
                     className="text-muted-foreground hover:text-destructive shrink-0"
                   >
                     ✕
@@ -287,27 +287,27 @@ export function FileZipper() {
             {resultUrl && (
               <div className="mt-auto pt-4 border-t border-border space-y-3">
                 <div className="text-sm text-muted-foreground">
-                  ZIP méret: <span className="font-mono text-foreground">{fmtSize(resultSize)}</span>
+                  ZIP size: <span className="font-mono text-foreground">{fmtSize(resultSize)}</span>
                   {origSize > 0 && (
                     <> &nbsp;·&nbsp; {resultSize < origSize
                       ? `-${Math.round((1 - resultSize / origSize) * 100)}%`
-                      : "nem lett kisebb (a tartalom már tömörített)"}</>
+                      : "no reduction (content is already compressed)"}</>
                   )}
                 </div>
                 {hitTarget === false && (
                   <p className="text-xs text-amber-400">
-                    A cél méret ({targetMb} MB) nem érhető el ezekkel a fájlokkal veszteségmentesen. Vegyél ki
-                    fájlokat, vagy használd a fájl-darabolást.
+                    The target size ({targetMb} MB) cannot be reached losslessly with these files. Remove some
+                    files, or use file splitting instead.
                   </p>
                 )}
                 {hitTarget === true && (
-                  <p className="text-xs text-emerald-400">Belül van a {targetMb} MB-os célon. ✓</p>
+                  <p className="text-xs text-emerald-400">Within the {targetMb} MB target.</p>
                 )}
                 <button
                   onClick={download}
                   className="px-6 py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 shadow-lg"
                 >
-                  ⬇ Letöltés (ZIP)
+                  Download ZIP
                 </button>
               </div>
             )}

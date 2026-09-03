@@ -247,8 +247,8 @@ export function ImageCompressor() {
           >
             <input type="file" accept="image/*" onChange={onFile} className="hidden" />
             <div className="text-5xl">📁</div>
-            <p className="text-sm font-medium text-foreground">Húzd ide a képet</p>
-            <p className="text-xs text-muted-foreground">vagy kattints a tallózáshoz</p>
+            <p className="text-sm font-medium text-foreground">Drop your image here</p>
+            <p className="text-xs text-muted-foreground">or click to browse</p>
           </label>
         ) : (
           <div className="space-y-2">
@@ -263,7 +263,7 @@ export function ImageCompressor() {
               onClick={() => { setImage(null); setResultUrl(null); }}
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
-              Másik kép
+              Change image
             </button>
           </div>
         )}
@@ -277,7 +277,7 @@ export function ImageCompressor() {
                 mode === m ? "bg-primary text-primary-foreground border-primary" : "bg-background/60 border-input hover:bg-accent"
               }`}
             >
-              {m === "compress" ? "Tömörítés" : "Resize"}
+              {m === "compress" ? "Compress" : "Resize"}
             </button>
           ))}
         </div>
@@ -286,7 +286,7 @@ export function ImageCompressor() {
           <>
             <div>
               <div className="flex justify-between items-baseline mb-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Cél méret</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Target size</label>
                 <span className="text-sm font-mono">{targetMb} MB</span>
               </div>
               <input
@@ -301,28 +301,28 @@ export function ImageCompressor() {
                 onChange={(e) => setTargetMb(Math.max(0.01, Number(e.target.value) || 0))}
                 className="mt-2 w-full rounded-md border border-input bg-background/60 px-3 py-2 text-sm"
               />
-              <p className="text-[11px] text-muted-foreground mt-1">JPEG-be konvertál a pontos méretért.</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Converts to JPEG to hit the exact size.</p>
             </div>
             <button
               onClick={handleCompress}
               disabled={!image || busy}
               className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             >
-              {busy ? "Tömörítés…" : "🗜️ Tömörítés"}
+              {busy ? "Compressing…" : "Compress"}
             </button>
           </>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-2">
-              <NumField label="Szélesség" value={width} onChange={onWidth} />
-              <NumField label="Magasság" value={height} onChange={onHeight} />
+              <NumField label="Width" value={width} onChange={onWidth} />
+              <NumField label="Height" value={height} onChange={onHeight} />
             </div>
             <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
               <input type="checkbox" checked={lockRatio} onChange={(e) => setLockRatio(e.target.checked)} />
-              Arány megtartása
+              Lock aspect ratio
             </label>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Formátum</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Format</label>
               <div className="flex gap-2">
                 {(["png", "jpg", "gif"] as const).map((f) => (
                   <button
@@ -335,7 +335,7 @@ export function ImageCompressor() {
                 ))}
               </div>
               {isGif && resizeFormat !== "gif" && (
-                <p className="text-[11px] text-amber-400/80 mt-1.5">Animált GIF-nél csak GIF formátum tartja meg az animációt.</p>
+                <p className="text-[11px] text-amber-400/80 mt-1.5">For animated GIFs only the GIF format preserves animation.</p>
               )}
             </div>
             <button
@@ -343,7 +343,7 @@ export function ImageCompressor() {
               disabled={!image || busy}
               className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             >
-              {busy ? "Átméretezés…" : "📐 Átméretezés"}
+              {busy ? "Resizing…" : "Resize"}
             </button>
           </>
         )}
@@ -354,7 +354,7 @@ export function ImageCompressor() {
           <>
             <img src={resultUrl} alt="" className="max-w-full max-h-[60vh] object-contain rounded-md shadow-2xl" />
             <div className="text-sm text-muted-foreground">
-              Új méret: <span className="font-mono text-foreground">{fmtSize(resultSize)}</span>
+              New size: <span className="font-mono text-foreground">{fmtSize(resultSize)}</span>
               {origSize > 0 && mode === "compress" && (
                 <> &nbsp;·&nbsp; -{Math.max(0, Math.round((1 - resultSize / origSize) * 100))}%</>
               )}
@@ -363,12 +363,12 @@ export function ImageCompressor() {
               onClick={download}
               className="px-6 py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 shadow-lg"
             >
-              ⬇ Letöltés ({resultExt.toUpperCase()})
+              Download ({resultExt.toUpperCase()})
             </button>
           </>
         ) : (
           <p className="text-muted-foreground text-sm text-center">
-            {image ? "Indítsd el a műveletet a bal oldalon." : "Tölts fel egy képet a kezdéshez."}
+            {image ? "Start the operation from the panel on the left." : "Upload an image to get started."}
           </p>
         )}
       </div>

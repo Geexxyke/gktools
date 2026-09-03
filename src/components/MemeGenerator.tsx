@@ -4,7 +4,7 @@ type Format = "png" | "gif";
 
 export function MemeGenerator() {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
-  const [text, setText] = useState("ÍRD IDE A SZÖVEGED");
+  const [text, setText] = useState("YOUR TEXT HERE");
   const [padding, setPadding] = useState(200);
   const [fontSize, setFontSize] = useState(90);
   const [fontWeight, setFontWeight] = useState(900);
@@ -141,8 +141,8 @@ export function MemeGenerator() {
           >
             <input type="file" accept="image/*" onChange={onFile} className="hidden" />
             <div className="text-5xl">📁</div>
-            <p className="text-sm font-medium text-foreground">Húzd ide a képet</p>
-            <p className="text-xs text-muted-foreground">vagy kattints a tallózáshoz</p>
+            <p className="text-sm font-medium text-foreground">Drop your image here</p>
+            <p className="text-xs text-muted-foreground">or click to browse</p>
           </label>
         ) : (
           <div className="space-y-2">
@@ -153,12 +153,12 @@ export function MemeGenerator() {
               onClick={() => setImage(null)}
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
-              Másik kép
+              Change image
             </button>
           </div>
         )}
 
-        <Field label="Szöveg">
+        <Field label="Text">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -167,18 +167,18 @@ export function MemeGenerator() {
           />
         </Field>
 
-        <Slider label="Fehér sáv" value={padding} min={40} max={1200} step={20} onChange={setPadding} unit="px" />
-        <Slider label="Betűméret" value={fontSize} min={30} max={250} step={5} onChange={setFontSize} unit="%" />
-        <Slider label="Vastagság" value={fontWeight} min={100} max={900} step={100} onChange={setFontWeight} />
-        <Slider label="Körvonal" value={strokeWidth} min={0} max={30} step={1} onChange={setStrokeWidth} unit="px" />
+        <Slider label="White bar" value={padding} min={40} max={1200} step={20} onChange={setPadding} unit="px" />
+        <Slider label="Font size" value={fontSize} min={30} max={250} step={5} onChange={setFontSize} unit="%" />
+        <Slider label="Weight" value={fontWeight} min={100} max={900} step={100} onChange={setFontWeight} />
+        <Slider label="Outline" value={strokeWidth} min={0} max={30} step={1} onChange={setStrokeWidth} unit="px" />
 
         <div className="grid grid-cols-3 gap-2">
-          <ColorPick label="Szöveg" value={textColor} onChange={setTextColor} />
-          <ColorPick label="Körvonal" value={strokeColor} onChange={setStrokeColor} />
-          <ColorPick label="Sáv" value={bgColor} onChange={setBgColor} />
+          <ColorPick label="Text" value={textColor} onChange={setTextColor} />
+          <ColorPick label="Outline" value={strokeColor} onChange={setStrokeColor} />
+          <ColorPick label="Bar" value={bgColor} onChange={setBgColor} />
         </div>
 
-        <Field label="Formátum">
+        <Field label="Format">
           <div className="flex gap-2">
             {(["png", "gif"] as const).map((f) => (
               <button
@@ -201,7 +201,7 @@ export function MemeGenerator() {
           disabled={!image}
           className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
-          ⬇ Letöltés ({format.toUpperCase()})
+          Download ({format.toUpperCase()})
         </button>
       </div>
 
@@ -212,7 +212,7 @@ export function MemeGenerator() {
             className="max-w-full max-h-[75vh] object-contain rounded-md shadow-2xl"
           />
         ) : (
-          <p className="text-muted-foreground text-sm">A kép feltöltése után itt jelenik meg az előnézet</p>
+          <p className="text-muted-foreground text-sm">The preview appears here once you upload an image</p>
         )}
       </div>
     </div>
