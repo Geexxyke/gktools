@@ -264,18 +264,18 @@ export function FaceBlur() {
             />
             <div className="text-5xl">🫥</div>
             <p className="text-sm font-medium text-foreground">
-              Húzd ide a képet
+              Drop your image here
             </p>
             <p className="text-xs text-muted-foreground">
-              vagy kattints a tallózáshoz
+              or click to browse
             </p>
           </label>
         ) : (
           <div className="space-y-2">
             <div className="text-xs text-muted-foreground bg-background/40 border border-border rounded-lg p-3 leading-relaxed">
               {shape === "brush"
-                ? "Fess a képen, mint egy ecsettel — a kör méretét állítsd be lent."
-                : "Rajzolj téglalapot a kitakarni kívánt részre."}
+                ? "Paint over the image like a brush — adjust the circle size below."
+                : "Drag a rectangle over the area you want to redact."}
             </div>
             <button
               onClick={() => {
@@ -284,7 +284,7 @@ export function FaceBlur() {
               }}
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
-              Másik kép
+              Change image
             </button>
           </div>
         )}
@@ -296,8 +296,8 @@ export function FaceBlur() {
           <div className="grid grid-cols-2 gap-2">
             {(
               [
-                { id: "brush", label: "Ecset (kör)", icon: "⚪" },
-                { id: "rect", label: "Téglalap", icon: "▭" },
+                { id: "brush", label: "Brush (circle)", icon: "⚪" },
+                { id: "rect", label: "Rectangle", icon: "▭" },
               ] as const
             ).map((s) => (
               <button
@@ -318,14 +318,14 @@ export function FaceBlur() {
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
-            Eszköz
+            Tool
           </label>
           <div className="grid grid-cols-3 gap-2">
             {(
               [
-                { id: "blur", label: "Homály", icon: "💨" },
+                { id: "blur", label: "Blur", icon: "💨" },
                 { id: "pixelate", label: "Pixel", icon: "🔲" },
-                { id: "black", label: "Sáv", icon: "⬛" },
+                { id: "black", label: "Bar", icon: "⬛" },
               ] as const
             ).map((m) => (
               <button
@@ -348,7 +348,7 @@ export function FaceBlur() {
           <div>
             <div className="flex justify-between items-baseline mb-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Ecset méret
+                Brush size
               </label>
               <span className="text-sm font-mono">{brushSize}px</span>
             </div>
@@ -367,7 +367,7 @@ export function FaceBlur() {
           <div>
             <div className="flex justify-between items-baseline mb-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {mode === "blur" ? "Homály erőssége" : "Pixel méret"}
+                {mode === "blur" ? "Blur strength" : "Pixel size"}
               </label>
               <span className="text-sm font-mono">{intensity}</span>
             </div>
@@ -395,7 +395,7 @@ export function FaceBlur() {
             disabled={regions.length === 0}
             className="py-2 rounded-md border border-border hover:bg-accent text-sm font-semibold disabled:opacity-40"
           >
-            Töröl
+            Clear
           </button>
         </div>
 
@@ -404,7 +404,7 @@ export function FaceBlur() {
           disabled={!image}
           className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
-          ⬇ Letöltés (PNG)
+          Download PNG
         </button>
       </div>
 
@@ -420,7 +420,7 @@ export function FaceBlur() {
           />
         ) : (
           <p className="text-muted-foreground text-sm">
-            A kép feltöltése után itt jelenik meg az előnézet
+            The preview appears here once you upload an image
           </p>
         )}
       </div>

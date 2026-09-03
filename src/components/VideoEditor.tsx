@@ -497,7 +497,7 @@ export function VideoEditor() {
         "out.mp4",
       ];
 
-      setStatus("Renderelés…");
+      setStatus("Rendering…");
       await ff.exec(args);
       const data = (await ff.readFile("out.mp4")) as Uint8Array;
       const blob = new Blob([data.buffer as ArrayBuffer], { type: "video/mp4" });
