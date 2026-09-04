@@ -74,7 +74,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Section = "home" | "tools" | "addons" | "about";
-type AddonId = "meme" | "image" | "blur" | "video" | "zip" | "bg" | "convert";
+type AddonId = "meme" | "image" | "blur" | "video" | "zip" | "bg" | "convert" | "host";
 
 type Addon = {
   id: AddonId;
@@ -150,7 +150,17 @@ const addons: Addon[] = [
     heading: "File Converter",
     sub: "Convert PNG, JPG, WEBP, BMP or SVG artwork into GIF with palette and width control.",
   },
+  {
+    id: "host",
+    name: "Image to URL",
+    tag: "Hosting",
+    Icon: ImageUp,
+    desc: "Upload an image and get a permanent direct link that embeds in Discord, bots and forums.",
+    heading: "Image to URL",
+    sub: "Drop an image in, copy the direct link, and paste it anywhere an image URL is expected.",
+  },
 ];
+
 
 function Home() {
   const [section, setSection] = useState<Section>("home");
@@ -234,6 +244,7 @@ function Home() {
             {active.id === "zip" && <FileZipper />}
             {active.id === "bg" && <BgRemover />}
             {active.id === "convert" && <FileConverter />}
+            {active.id === "host" && <ImageHost />}
           </section>
         )}
 
