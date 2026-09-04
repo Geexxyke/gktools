@@ -6,10 +6,14 @@ import {
   Blocks,
   ChevronRight,
   Crop,
+  Download,
   EyeOff,
   FileArchive,
   Film,
+  Gamepad2,
   ImageDown,
+  Package,
+
   Layers,
   Link as LinkIcon,
   Repeat,
@@ -353,27 +357,61 @@ function AddonCard({ addon, onClick }: { addon: Addon; onClick: () => void }) {
   );
 }
 
+const toolItems = [
+  {
+    id: "cracks",
+    label: "Game Cracks",
+    Icon: Gamepad2,
+    title: "Geometry Dash",
+    desc: "Full cracked build of Geometry Dash, packaged and ready to run. Hosted as a direct download.",
+    href: "https://workupload.com/file/bkWx8yBnQSK",
+    cta: "Download Geometry Dash",
+  },
+  {
+    id: "programs",
+    label: "Programs",
+    Icon: Package,
+    title: "WinRAR",
+    desc: "WinRAR archiver for Windows — create and extract RAR and ZIP archives without limits.",
+    href: "https://workupload.com/file/zxvrCzP9tkA",
+    cta: "Download WinRAR",
+  },
+];
+
 function ToolsView() {
   return (
     <>
       <PageHead
         label="Tools"
         title="Custom tools"
-        desc="This section is reserved for purpose-built tools made to order. Nothing is published here yet — tell me what you need and it gets built into this slot."
+        desc="Hand-picked downloads and purpose-built utilities. Files are hosted externally and open in a new tab."
       />
-      <div className="rounded-lg border border-dashed border-border bg-card/30 p-10 text-center">
-        <span className="grid place-items-center size-11 rounded-lg border border-border bg-card mx-auto">
-          <Wrench className="size-5 text-primary" />
-        </span>
-        <h2 className="text-lg font-semibold mt-4">No custom tools yet</h2>
-        <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto leading-relaxed">
-          Custom builds will be listed here as they ship. Until then, the general-purpose utilities
-          live under Addons.
-        </p>
+      <div className="grid sm:grid-cols-2 gap-3">
+        {toolItems.map((t) => (
+          <article key={t.id} className="rounded-lg border border-border bg-card/50 p-5 flex flex-col">
+            <div className="flex items-center justify-between">
+              <span className="grid place-items-center size-9 rounded-md border border-border bg-background/60">
+                <t.Icon className="size-4 text-primary" />
+              </span>
+              <span className="mono-label">{t.label}</span>
+            </div>
+            <h2 className="text-base font-semibold mt-4">{t.title}</h2>
+            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed flex-1">{t.desc}</p>
+            <a
+              href={t.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-5 px-4 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition"
+            >
+              <Download className="size-4" /> {t.cta}
+            </a>
+          </article>
+        ))}
       </div>
     </>
   );
 }
+
 
 function AboutView() {
   return (
