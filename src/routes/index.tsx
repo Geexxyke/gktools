@@ -13,12 +13,12 @@ import {
   Gamepad2,
   ImageDown,
   Package,
-
   Layers,
   Link as LinkIcon,
   Repeat,
   Scissors,
   ShieldCheck,
+  Terminal,
   Type,
   Wrench,
   Zap,
@@ -368,13 +368,22 @@ const toolItems = [
     cta: "Download Geometry Dash",
   },
   {
-    id: "programs",
+    id: "winrar",
     label: "Programs",
     Icon: Package,
     title: "WinRAR",
     desc: "WinRAR archiver for Windows — create and extract RAR and ZIP archives without limits.",
     href: "https://workupload.com/file/zxvrCzP9tkA",
     cta: "Download WinRAR",
+  },
+  {
+    id: "xtremshell",
+    label: "Programs",
+    Icon: Terminal,
+    title: "Xtremshell",
+    desc: "A hardened Windows terminal shell environment for power users and advanced workflows.",
+    href: "https://workupload.com/file/YE5u2HgYhUj",
+    cta: "Download Xtremshell",
   },
 ];
 
