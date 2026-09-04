@@ -12,6 +12,7 @@ import {
   Film,
   Gamepad2,
   ImageDown,
+  ImageUp,
   Package,
   Layers,
   Link as LinkIcon,
@@ -30,6 +31,7 @@ import { VideoEditor } from "@/components/VideoEditor";
 import { FileZipper } from "@/components/FileZipper";
 import { BgRemover } from "@/components/BgRemover";
 import { FileConverter } from "@/components/FileConverter";
+import { ImageHost } from "@/components/ImageHost";
 
 export const Route = createFileRoute("/")({
   head: () => ({
