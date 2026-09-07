@@ -99,18 +99,13 @@ export function MemeGenerator() {
     }
 
     const GIF = (await import("gif.js")).default;
-    const workerBlob = new Blob(
-      [`importScripts("/gif/gif.worker.js");`],
-      { type: "application/javascript" },
-    );
-    const workerUrl = URL.createObjectURL(workerBlob);
 
     const gif = new GIF({
       workers: 1,
       quality: 10,
       width: canvas.width,
       height: canvas.height,
-      workerScript: workerUrl,
+      workerScript: "/gif/gif.worker.js",
     });
     gif.addFrame(canvas, { delay: 200, copy: true });
     gif.on("finished", (blob: Blob) => {
@@ -119,11 +114,11 @@ export function MemeGenerator() {
       link.download = "mem.gif";
       link.href = url;
       link.click();
-      URL.revokeObjectURL(url);
-      URL.revokeObjectURL(workerUrl);
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
     });
     gif.render();
   };
+
 
   return (
     <div className="grid lg:grid-cols-[360px_1fr] gap-6">
