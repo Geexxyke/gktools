@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import GIF from "gif.js";
 
 type Format = "png" | "gif";
 
