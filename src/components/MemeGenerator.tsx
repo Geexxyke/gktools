@@ -212,11 +212,12 @@ export function MemeGenerator() {
 
         <button
           onClick={download}
-          disabled={!image}
+          disabled={!image || busy}
           className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
-          Download ({format.toUpperCase()})
+          {busy ? "Encoding GIF…" : `Download (${format.toUpperCase()})`}
         </button>
+        {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
       <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
