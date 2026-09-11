@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import GIF from "gif.js";
 
 type Format = "png" | "gif";
 
@@ -86,38 +87,56 @@ export function MemeGenerator() {
     }
   }, [image, text, padding, fontSize, fontWeight, textColor, strokeColor, strokeWidth, bgColor]);
 
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const download = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    setError(null);
 
     if (format === "png") {
       const link = document.createElement("a");
       link.download = "mem.png";
       link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
       link.click();
+      link.remove();
       return;
     }
 
-    const GIF = (await import("gif.js")).default;
-
-    const gif = new GIF({
-      workers: 1,
-      quality: 10,
-      width: canvas.width,
-      height: canvas.height,
-      workerScript: "/gif/gif.worker.js",
-    });
-    gif.addFrame(canvas, { delay: 200, copy: true });
-    gif.on("finished", (blob: Blob) => {
+    setBusy(true);
+    try {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas unavailable.");
+      const gif = new GIF({
+        workers: 2,
+        quality: 10,
+        width: canvas.width,
+        height: canvas.height,
+        workerScript: "/gif/gif.worker.js",
+      });
+      const blob = await new Promise<Blob>((res, rej) => {
+        gif.on("finished", (b: Blob) => res(b));
+        gif.on("abort", () => rej(new Error("GIF encoding aborted.")));
+        gif.addFrame(ctx.getImageData(0, 0, canvas.width, canvas.height), { delay: 100, copy: true });
+        gif.render();
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.download = "mem.gif";
       link.href = url;
+      document.body.appendChild(link);
       link.click();
+      link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10000);
-    });
-    gif.render();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "GIF export failed.");
+    } finally {
+      setBusy(false);
+    }
   };
+
 
 
   return (
@@ -193,11 +212,12 @@ export function MemeGenerator() {
 
         <button
           onClick={download}
-          disabled={!image}
+          disabled={!image || busy}
           className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
-          Download ({format.toUpperCase()})
+          {busy ? "Encoding GIF…" : `Download (${format.toUpperCase()})`}
         </button>
+        {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
       <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
