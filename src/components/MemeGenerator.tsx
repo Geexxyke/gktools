@@ -52,7 +52,7 @@ export function MemeGenerator() {
     // scale font size relative to image width for consistency
     const scaled = Math.floor((fontSize / 100) * (canvas.width / 10));
     ctx.fillStyle = textColor;
-    ctx.font = `${fontWeight} ${scaled}px Impact, "Anton", "Arial Black", sans-serif`;
+    ctx.font = `${fontWeight} ${scaled}px Anton, Impact, "Arial Black", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.lineJoin = "round";
