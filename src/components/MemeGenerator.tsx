@@ -74,8 +74,13 @@ export function MemeGenerator() {
     if (line) lines.push(line);
 
     const lineHeight = scaled * 1.1;
-    const total = lines.length * lineHeight;
-    let y = padding / 2 - total / 2 + lineHeight / 2;
+    // Center based on actual ink bounds (cap height), not the font em-box,
+    // so the visible text sits exactly in the middle of the bar.
+    const metrics = lines.map((l) => ctx.measureText(l));
+    const maxAscent = Math.max(...metrics.map((m) => m.actualBoundingBoxAscent || scaled * 0.7));
+    const maxDescent = Math.max(...metrics.map((m) => m.actualBoundingBoxDescent || scaled * 0.3));
+    const inkHeight = maxAscent + (lines.length - 1) * lineHeight + maxDescent;
+    let y = padding / 2 - inkHeight / 2 + maxAscent;
     for (const l of lines) {
       if (strokeWidth > 0) {
         ctx.strokeStyle = strokeColor;
