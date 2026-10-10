@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import GIF from "gif.js";
-import gifuct from "gifuct-js";
-const { parseGIF, decompressFrames } = gifuct as any;
+import { parseGIF, decompressFrames } from "gifuct-js";
 
 type Mode = "compress" | "resize";
 type ResizeFormat = "png" | "jpg" | "gif";
