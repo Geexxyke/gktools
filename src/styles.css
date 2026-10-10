@@ -33,6 +33,8 @@
   --color-neon-cyan: var(--neon-cyan);
   --color-neon-violet: var(--neon-violet);
   --color-neon-lime: var(--neon-lime);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -59,6 +61,8 @@
   --border: oklch(0.29 0.016 250);
   --input: oklch(0.29 0.016 250);
   --ring: oklch(0.68 0.16 245);
+  --warning: oklch(0.82 0.15 80);
+  --success: oklch(0.76 0.17 150);
 
   --neon-pink: oklch(0.72 0.28 340);
   --neon-cyan: oklch(0.82 0.18 200);
@@ -91,7 +95,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   /* Decorative background as a fixed, GPU-promoted layer so it doesn't repaint on scroll */
@@ -108,6 +112,100 @@
     background-size: 100% 100%, 64px 64px, 64px 64px;
     transform: translateZ(0);
     will-change: transform;
+  }
+}
+
+/* Shared phone ergonomics without changing exported media dimensions. */
+.tool-workspace img,
+.tool-workspace video,
+.tool-workspace canvas {
+  max-width: 100%;
+}
+
+.editor-layout > * {
+  min-width: 0;
+}
+
+button,
+a,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+  body::before {
+    display: none;
+  }
+
+  header {
+    backdrop-filter: none;
+    background: var(--background);
+  }
+
+  button,
+  a:not([rel="stylesheet"]) {
+    min-height: 44px;
+  }
+
+  button {
+    white-space: normal;
+  }
+
+  .tool-workspace input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+  .tool-workspace textarea {
+    min-height: 44px;
+    font-size: 16px;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .tool-workspace input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .tool-workspace [role="slider"] {
+    width: 24px;
+    height: 24px;
+  }
+
+  .tool-workspace label:has(input[type="range"]) {
+    min-width: 0;
+  }
+
+  .editor-preview {
+    text-align: center;
+  }
+
+  .editor-preview canvas,
+  .editor-preview img {
+    max-height: 55svh;
+  }
+
+  .tool-workspace p {
+    overflow-wrap: anywhere;
+  }
+
+  .tool-workspace label:has(input[type="file"]) {
+    aspect-ratio: auto;
+    min-height: 180px;
+    padding: 16px;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

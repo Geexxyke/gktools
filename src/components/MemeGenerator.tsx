@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import GIF from "gif.js";
 
@@ -145,8 +146,8 @@ export function MemeGenerator() {
 
 
   return (
-    <div className="grid lg:grid-cols-[360px_1fr] gap-6">
-      <div className="space-y-5 bg-card/60 backdrop-blur border border-border rounded-2xl p-5">
+    <div className="editor-layout grid min-w-0 lg:grid-cols-[360px_minmax(0,1fr)] gap-4 sm:gap-6">
+      <div className="editor-controls min-w-0 space-y-5 bg-card/60 border border-border rounded-lg p-4 sm:p-5">
         {!image ? (
           <label
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -168,12 +169,12 @@ export function MemeGenerator() {
             <div className="aspect-video w-full rounded-xl overflow-hidden border border-border bg-background/40 flex items-center justify-center">
               <img src={image.src} alt="" className="max-h-full max-w-full object-contain" />
             </div>
-            <button
+            <Button variant="plain" size="natural"
               onClick={() => setImage(null)}
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
               Change image
-            </button>
+            </Button>
           </div>
         )}
 
@@ -200,7 +201,7 @@ export function MemeGenerator() {
         <Field label="Format">
           <div className="flex gap-2">
             {(["png", "gif"] as const).map((f) => (
-              <button
+              <Button variant="plain" size="natural"
                 key={f}
                 onClick={() => setFormat(f)}
                 className={`flex-1 py-2 rounded-md text-sm font-semibold border transition ${
@@ -210,22 +211,22 @@ export function MemeGenerator() {
                 }`}
               >
                 {f.toUpperCase()}
-              </button>
+              </Button>
             ))}
           </div>
         </Field>
 
-        <button
+        <Button variant="plain" size="natural"
           onClick={download}
           disabled={!image || busy}
-          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
           {busy ? "Encoding GIF…" : `Download (${format.toUpperCase()})`}
-        </button>
+        </Button>
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
-      <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
+      <div className="editor-preview min-w-0 bg-card/40 border border-border rounded-lg p-3 sm:p-5 flex items-center justify-center min-h-48 sm:min-h-[400px]">
         {image ? (
           <canvas
             ref={canvasRef}
@@ -264,7 +265,7 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-[oklch(0.7_0.25_330)]"
+        className="w-full accent-primary"
       />
     </div>
   );

@@ -1,10 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
-import { Link, createRouter, useRouter } from "@tanstack/react-router";
+import { Link, createRouter, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { routeTree } from "./routeTree.gen";
 import { reportLovableError } from "./lib/lovable-error-reporting";
 
-function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function DefaultErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
 

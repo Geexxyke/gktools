@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Copy, ExternalLink, ImageUp, Loader2, Upload } from "lucide-react";
 
@@ -71,7 +72,7 @@ export function ImageHost() {
           void upload(Array.from(e.dataTransfer.files));
         }}
         onClick={() => inputRef.current?.click()}
-        className={`cursor-pointer rounded-lg border border-dashed p-10 text-center transition ${
+        className={`cursor-pointer rounded-lg border border-dashed p-5 sm:p-10 text-center transition ${
           dragOver ? "border-primary bg-card" : "border-border bg-card/40 hover:border-primary/50"
         }`}
       >
@@ -122,20 +123,20 @@ export function ImageHost() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold truncate">{it.name}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{fmt(it.size)}</p>
-                <div className="flex items-center gap-2 mt-3">
+                <div className="grid grid-cols-2 sm:grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 mt-3">
                   <input
                     readOnly
                     value={it.url}
                     onFocus={(e) => e.currentTarget.select()}
-                    className="flex-1 min-w-0 rounded-md border border-border bg-background/60 px-3 py-2 text-xs font-mono"
+                    className="col-span-2 sm:col-span-1 w-full min-w-0 rounded-md border border-border bg-background/60 px-3 py-2 text-xs font-mono"
                   />
-                  <button
+                  <Button variant="plain" size="natural"
                     onClick={() => void copy(it.url)}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition shrink-0"
                   >
                     {copied === it.url ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
                     {copied === it.url ? "Copied" : "Copy"}
-                  </button>
+                  </Button>
                   <a
                     href={it.url}
                     target="_blank"
@@ -151,8 +152,8 @@ export function ImageHost() {
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
-        <Upload className="size-3.5" /> Files are stored on the GK Tools backend and served straight
+      <p className="text-xs text-muted-foreground flex items-start gap-1.5">
+        <Upload className="size-3.5 shrink-0 mt-0.5" /> Files are stored on the GK Tools backend and served straight
         from the link — anyone with the link can view the image.
       </p>
     </div>
