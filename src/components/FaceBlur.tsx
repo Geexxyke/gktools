@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Mode = "blur" | "pixelate" | "black";
@@ -240,8 +241,8 @@ export function FaceBlur() {
   };
 
   return (
-    <div className="grid lg:grid-cols-[360px_1fr] gap-6">
-      <div className="space-y-5 bg-card/60 backdrop-blur border border-border rounded-2xl p-5">
+    <div className="editor-layout grid min-w-0 lg:grid-cols-[360px_minmax(0,1fr)] gap-4 sm:gap-6">
+      <div className="editor-controls min-w-0 space-y-5 bg-card/60 border border-border rounded-lg p-4 sm:p-5">
         {!image ? (
           <label
             onDragOver={(e) => {
@@ -277,7 +278,7 @@ export function FaceBlur() {
                 ? "Paint over the image like a brush — adjust the circle size below."
                 : "Drag a rectangle over the area you want to redact."}
             </div>
-            <button
+            <Button variant="plain" size="natural"
               onClick={() => {
                 setImage(null);
                 setRegions([]);
@@ -285,13 +286,13 @@ export function FaceBlur() {
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
               Change image
-            </button>
+            </Button>
           </div>
         )}
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
-            Alakzat
+            Shape
           </label>
           <div className="grid grid-cols-2 gap-2">
             {(
@@ -300,7 +301,7 @@ export function FaceBlur() {
                 { id: "rect", label: "Rectangle", icon: "▭" },
               ] as const
             ).map((s) => (
-              <button
+              <Button variant="plain" size="natural"
                 key={s.id}
                 onClick={() => setShape(s.id)}
                 className={`py-2 rounded-md text-xs font-semibold border transition ${
@@ -311,7 +312,7 @@ export function FaceBlur() {
               >
                 <div className="text-base">{s.icon}</div>
                 {s.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -328,7 +329,7 @@ export function FaceBlur() {
                 { id: "black", label: "Bar", icon: "⬛" },
               ] as const
             ).map((m) => (
-              <button
+              <Button variant="plain" size="natural"
                 key={m.id}
                 onClick={() => setMode(m.id)}
                 className={`py-2 rounded-md text-xs font-semibold border transition ${
@@ -339,7 +340,7 @@ export function FaceBlur() {
               >
                 <div className="text-base">{m.icon}</div>
                 {m.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -358,7 +359,7 @@ export function FaceBlur() {
               max={300}
               value={brushSize}
               onChange={(e) => setBrushSize(Number(e.target.value))}
-              className="w-full accent-[oklch(0.7_0.25_330)]"
+              className="w-full accent-primary"
             />
           </div>
         )}
@@ -377,38 +378,38 @@ export function FaceBlur() {
               max={mode === "blur" ? 120 : 80}
               value={intensity}
               onChange={(e) => setIntensity(Number(e.target.value))}
-              className="w-full accent-[oklch(0.7_0.25_330)]"
+              className="w-full accent-primary"
             />
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-2">
-          <button
+          <Button variant="plain" size="natural"
             onClick={undo}
             disabled={regions.length === 0}
             className="py-2 rounded-md border border-border hover:bg-accent text-sm font-semibold disabled:opacity-40"
           >
-            ↶ Vissza
-          </button>
-          <button
+            ↶ Undo
+          </Button>
+          <Button variant="plain" size="natural"
             onClick={clear}
             disabled={regions.length === 0}
             className="py-2 rounded-md border border-border hover:bg-accent text-sm font-semibold disabled:opacity-40"
           >
             Clear
-          </button>
+          </Button>
         </div>
 
-        <button
+        <Button variant="plain" size="natural"
           onClick={download}
           disabled={!image}
-          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
           Download PNG
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
+      <div className="editor-preview min-w-0 bg-card/40 border border-border rounded-lg p-3 sm:p-5 flex items-center justify-center min-h-48 sm:min-h-[400px]">
         {image ? (
           <canvas
             ref={canvasRef}

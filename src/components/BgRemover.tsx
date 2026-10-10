@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function BgRemover() {
@@ -86,8 +87,8 @@ export function BgRemover() {
   };
 
   return (
-    <div className="grid lg:grid-cols-[360px_1fr] gap-6">
-      <div className="space-y-5 bg-card/60 backdrop-blur border border-border rounded-2xl p-5">
+    <div className="editor-layout grid min-w-0 lg:grid-cols-[360px_minmax(0,1fr)] gap-4 sm:gap-6">
+      <div className="editor-controls min-w-0 space-y-5 bg-card/60 border border-border rounded-lg p-4 sm:p-5">
         {!srcUrl ? (
           <label
             onDragOver={(e) => {
@@ -121,7 +122,7 @@ export function BgRemover() {
             <p className="text-xs text-muted-foreground">or click to browse</p>
           </label>
         ) : (
-          <button
+          <Button variant="plain" size="natural"
             onClick={() => {
               setSrcUrl(null);
               setCutUrl(null);
@@ -130,38 +131,38 @@ export function BgRemover() {
             className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
           >
             Replace image
-          </button>
+          </Button>
         )}
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">
             Background
           </label>
-          <button
+          <Button variant="plain" size="natural"
             onClick={removeBg}
             disabled={!srcUrl || busy}
             className="w-full py-2.5 rounded-lg text-sm font-bold border border-primary bg-primary/15 hover:bg-primary/25 disabled:opacity-40"
           >
             {busy ? "Working…" : "Remove background"}
-          </button>
+          </Button>
           {cutUrl && (
             <div className="grid grid-cols-2 gap-2 mt-2">
-              <button
+              <Button variant="plain" size="natural"
                 onClick={() => setUseCut(false)}
                 className={`py-2 rounded-md text-xs font-semibold border transition ${
                   !useCut ? "bg-primary text-primary-foreground border-primary" : "bg-background/60 border-input hover:bg-accent"
                 }`}
               >
                 Original
-              </button>
-              <button
+              </Button>
+              <Button variant="plain" size="natural"
                 onClick={() => setUseCut(true)}
                 className={`py-2 rounded-md text-xs font-semibold border transition ${
                   useCut ? "bg-primary text-primary-foreground border-primary" : "bg-background/60 border-input hover:bg-accent"
                 }`}
               >
                 Cutout
-              </button>
+              </Button>
             </div>
           )}
           {status && (
@@ -174,7 +175,7 @@ export function BgRemover() {
             Mirror
           </label>
           <div className="grid grid-cols-2 gap-2">
-            <button
+            <Button variant="plain" size="natural"
               onClick={() => setFlipX((v) => !v)}
               disabled={!img}
               className={`py-2 rounded-md text-xs font-semibold border transition disabled:opacity-40 ${
@@ -183,8 +184,8 @@ export function BgRemover() {
             >
               <div className="text-base">⇄</div>
               Horizontal
-            </button>
-            <button
+            </Button>
+            <Button variant="plain" size="natural"
               onClick={() => setFlipY((v) => !v)}
               disabled={!img}
               className={`py-2 rounded-md text-xs font-semibold border transition disabled:opacity-40 ${
@@ -193,23 +194,23 @@ export function BgRemover() {
             >
               <div className="text-base">⇅</div>
               Vertical
-            </button>
+            </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             Horizontal mirroring flips the subject’s facing direction.
           </p>
         </div>
 
-        <button
+        <Button variant="plain" size="natural"
           onClick={download}
           disabled={!img}
           className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
           Download PNG
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex items-center justify-center min-h-[400px]">
+      <div className="editor-preview min-w-0 bg-card/40 border border-border rounded-lg p-3 sm:p-5 flex items-center justify-center min-h-48 sm:min-h-[400px]">
         {img ? (
           <canvas
             ref={canvasRef}

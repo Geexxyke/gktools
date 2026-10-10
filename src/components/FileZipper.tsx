@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { zipSync, type Zippable } from "fflate";
 
@@ -161,8 +162,8 @@ export function FileZipper() {
   };
 
   return (
-    <div className="grid lg:grid-cols-[360px_1fr] gap-6">
-      <div className="space-y-5 bg-card/60 backdrop-blur border border-border rounded-2xl p-5">
+    <div className="editor-layout grid min-w-0 lg:grid-cols-[360px_minmax(0,1fr)] gap-4 sm:gap-6">
+      <div className="editor-controls min-w-0 space-y-5 bg-card/60 border border-border rounded-lg p-4 sm:p-5">
         <label
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -225,7 +226,7 @@ export function FileZipper() {
                   target size.
                 </span>
               </label>
-              <p className="text-[11px] text-amber-400/80">
+              <p className="text-[11px] text-warning">
                 Documents, videos and already-compressed files cannot be guaranteed to shrink
                 losslessly.
               </p>
@@ -233,35 +234,35 @@ export function FileZipper() {
           )}
         </div>
 
-        <button
+        <Button variant="plain" size="natural"
           onClick={handleZip}
           disabled={!items.length || busy}
-          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+          className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
         >
           {busy ? "Compressing…" : "Create ZIP"}
-        </button>
+        </Button>
         {status && <p className="text-xs text-muted-foreground text-center">{status}</p>}
       </div>
 
-      <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex flex-col min-h-[400px] gap-4">
+      <div className="editor-preview min-w-0 bg-card/40 border border-border rounded-lg p-3 sm:p-5 flex flex-col min-h-48 sm:min-h-[400px] gap-4">
         {items.length === 0 ? (
           <p className="text-muted-foreground text-sm text-center m-auto">
             Upload files to get started.
           </p>
         ) : (
           <>
-            <div className="flex items-baseline justify-between">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-2">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
                 {items.length} files
               </h3>
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono text-muted-foreground">{fmtSize(origSize)}</span>
-                <button
+                <Button variant="plain" size="natural"
                   onClick={() => { setItems([]); setResultUrl(null); setHitTarget(null); }}
                   className="text-xs text-muted-foreground hover:text-foreground underline"
                 >
                   Clear all
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -271,15 +272,15 @@ export function FileZipper() {
                   key={it.id}
                   className="flex items-center gap-3 rounded-lg border border-border bg-background/40 px-3 py-2"
                 >
-                  <span className="text-sm truncate flex-1" title={it.file.name}>{it.file.name}</span>
+                  <span className="text-sm min-w-0 truncate flex-1" title={it.file.name}>{it.file.name}</span>
                   <span className="text-xs font-mono text-muted-foreground shrink-0">{fmtSize(it.file.size)}</span>
-                  <button
+                  <Button variant="plain" size="natural"
                     onClick={() => removeItem(it.id)}
                     aria-label={`${it.file.name} remove`}
                     className="text-muted-foreground hover:text-destructive shrink-0"
                   >
                     ✕
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -295,20 +296,20 @@ export function FileZipper() {
                   )}
                 </div>
                 {hitTarget === false && (
-                  <p className="text-xs text-amber-400">
+                  <p className="text-xs text-warning">
                     The target size ({targetMb} MB) cannot be reached losslessly with these files. Remove some
                     files, or use file splitting instead.
                   </p>
                 )}
                 {hitTarget === true && (
-                  <p className="text-xs text-emerald-400">Within the {targetMb} MB target.</p>
+                  <p className="text-xs text-success">Within the {targetMb} MB target.</p>
                 )}
-                <button
+                <Button variant="plain" size="natural"
                   onClick={download}
-                  className="px-6 py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 shadow-lg"
+                  className="px-6 py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 shadow-lg"
                 >
                   Download ZIP
-                </button>
+                </Button>
               </div>
             )}
           </>

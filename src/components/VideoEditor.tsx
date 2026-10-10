@@ -513,13 +513,13 @@ export function VideoEditor() {
 
   if (!file) {
     return (
-      <div className="border-2 border-dashed border-border rounded-2xl p-12 text-center">
+      <div className="border-2 border-dashed border-border rounded-lg p-5 sm:p-12 text-center">
         <p className="text-muted-foreground mb-4">Drag and drop or select a video (MP4, WebM, MOV)…</p>
         <input
           type="file"
           accept="video/*"
           onChange={(e) => e.target.files?.[0] && onPick(e.target.files[0])}
-          className="block mx-auto text-sm"
+          className="block w-full min-w-0 mx-auto text-sm"
         />
         <p className="text-xs text-muted-foreground mt-4">
           Processing runs entirely in your browser — nothing is uploaded to a server.
@@ -533,29 +533,29 @@ export function VideoEditor() {
   return (
     <div className="space-y-4">
       {/* Preview */}
-      <div className="rounded-xl overflow-hidden bg-black">
-        <video ref={videoRef} src={url} className="w-full max-h-[55vh]" />
+      <div className="rounded-xl overflow-hidden bg-background">
+        <video ref={videoRef} src={url} playsInline className="w-full max-h-[55vh]" />
       </div>
 
       {/* Transport */}
-      <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={togglePlay} variant="secondary" size="sm">
+      <div className="grid grid-cols-[auto_auto_minmax(0,1fr)] sm:flex sm:flex-wrap items-center gap-2">
+        <Button aria-label={playing ? "Pause" : "Play"} title={playing ? "Pause" : "Play"} onClick={togglePlay} variant="secondary" size="sm">
           {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
         </Button>
-        <Button onClick={splitAtPlayhead} variant="default" size="sm" title="Split at playhead (S)">
+        <Button onClick={splitAtPlayhead} variant="default" size="sm" title="Split at playhead">
           <Scissors className="w-4 h-4 mr-1" /> Split
         </Button>
         <span className="text-sm text-muted-foreground tabular-nums">
           {virtualTime.toFixed(2)}s / {totalDuration.toFixed(2)}s
         </span>
-        <div className="flex-1" />
-        <span className="text-xs text-muted-foreground">
+        <div className="hidden sm:block flex-1" />
+        <span className="col-span-3 text-xs text-muted-foreground">
           Original: {srcDuration.toFixed(2)}s
         </span>
       </div>
 
       {/* Virtual timeline scrubber */}
-      <div className="relative h-3 rounded-full bg-card border border-border overflow-hidden">
+      <div className="relative h-8 sm:h-6 rounded-md bg-card border border-border overflow-hidden">
         <div className="absolute top-0 bottom-0 bg-primary/80" style={{ width: pct(virtualTime) }} />
         <input
           type="range"
@@ -586,12 +586,12 @@ export function VideoEditor() {
                 }}
                 className={`shrink-0 rounded-lg border-2 cursor-pointer transition relative overflow-hidden ${
                   sel ? "border-primary" : "border-border"
-                } ${s.muted ? "bg-red-500/15" : "bg-primary/10"} ${active ? "ring-2 ring-primary/50" : ""}`}
+                } ${s.muted ? "bg-destructive/15" : "bg-primary/10"} ${active ? "ring-2 ring-primary/50" : ""}`}
                 style={{ width: `${w}px`, height: "64px" }}
               >
                 <div className="absolute inset-x-0 top-0 px-2 py-1 text-[10px] flex items-center justify-between bg-background/60">
                   <span className="tabular-nums">#{i + 1}</span>
-                  {s.muted && <VolumeX className="w-3 h-3 text-red-400" />}
+                  {s.muted && <VolumeX className="w-3 h-3 text-destructive" />}
                 </div>
                 <div className="absolute inset-x-0 bottom-0 px-2 py-1 text-[10px] tabular-nums bg-background/60">
                   {dur.toFixed(2)}s
@@ -618,10 +618,10 @@ export function VideoEditor() {
               {s.muted ? <VolumeX className="w-4 h-4 mr-1" /> : <Volume2 className="w-4 h-4 mr-1" />}
               {s.muted ? "Muted" : "Mute"}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, -1)} title="Move left">
+            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, -1)} aria-label="Move left" title="Move left">
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, 1)} title="Move right">
+            <Button size="sm" variant="outline" onClick={() => moveSeg(s.id, 1)} aria-label="Move right" title="Move right">
               <ArrowRight className="w-4 h-4" />
             </Button>
             <Button
@@ -643,7 +643,7 @@ export function VideoEditor() {
 
       {/* Sensitivity */}
       <div className="rounded-lg border border-border p-3">
-        <div className="flex items-center justify-between text-sm mb-1">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-sm mb-3">
           <span>AI sensitivity (cosine threshold)</span>
           <span className="text-muted-foreground tabular-nums">{sensitivity.toFixed(2)}</span>
         </div>
@@ -677,7 +677,7 @@ export function VideoEditor() {
         </Button>
         {status && <span className="text-sm text-muted-foreground">{status}</span>}
         {(rendering || progress > 0) && (
-          <div className="flex-1 min-w-[200px]">
+          <div className="w-full sm:flex-1 min-w-0">
             <Progress value={progress} />
           </div>
         )}
@@ -686,7 +686,7 @@ export function VideoEditor() {
       {outUrl && (
         <div className="rounded-xl border border-border p-4 space-y-3">
           <div className="font-semibold">Result</div>
-          <video src={outUrl} controls className="w-full rounded-lg max-h-[50vh] bg-black" />
+          <video src={outUrl} controls className="w-full rounded-lg max-h-[50vh] bg-background" />
           <a
             href={outUrl}
             download="gktools-video.mp4"

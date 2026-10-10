@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import GIF from "gif.js";
 import gifuct from "gifuct-js";
@@ -234,8 +235,8 @@ export function ImageCompressor() {
   };
 
   return (
-    <div className="grid lg:grid-cols-[360px_1fr] gap-6">
-      <div className="space-y-5 bg-card/60 backdrop-blur border border-border rounded-2xl p-5">
+    <div className="editor-layout grid min-w-0 lg:grid-cols-[360px_minmax(0,1fr)] gap-4 sm:gap-6">
+      <div className="editor-controls min-w-0 space-y-5 bg-card/60 border border-border rounded-lg p-4 sm:p-5">
         {!image ? (
           <label
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -259,18 +260,18 @@ export function ImageCompressor() {
               <span>{image.width}×{image.height}</span>
               <span>{fmtSize(origSize)}</span>
             </div>
-            <button
+            <Button variant="plain" size="natural"
               onClick={() => { setImage(null); setResultUrl(null); }}
               className="w-full text-xs py-1.5 rounded-md border border-border hover:bg-accent text-muted-foreground"
             >
               Change image
-            </button>
+            </Button>
           </div>
         )}
 
         <div className="flex gap-2">
           {(["compress", "resize"] as const).map((m) => (
-            <button
+            <Button variant="plain" size="natural"
               key={m}
               onClick={() => setMode(m)}
               className={`flex-1 py-2 rounded-md text-sm font-semibold border transition ${
@@ -278,7 +279,7 @@ export function ImageCompressor() {
               }`}
             >
               {m === "compress" ? "Compress" : "Resize"}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -293,7 +294,7 @@ export function ImageCompressor() {
                 type="range" min={0.05} max={20} step={0.05}
                 value={targetMb}
                 onChange={(e) => setTargetMb(Number(e.target.value))}
-                className="w-full accent-[oklch(0.7_0.25_330)]"
+                className="w-full accent-primary"
               />
               <input
                 type="number" min={0.05} step={0.05}
@@ -303,13 +304,13 @@ export function ImageCompressor() {
               />
               <p className="text-[11px] text-muted-foreground mt-1">Converts to JPEG to hit the exact size.</p>
             </div>
-            <button
+            <Button variant="plain" size="natural"
               onClick={handleCompress}
               disabled={!image || busy}
-              className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+              className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             >
               {busy ? "Compressing…" : "Compress"}
-            </button>
+            </Button>
           </>
         ) : (
           <>
@@ -325,31 +326,31 @@ export function ImageCompressor() {
               <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Format</label>
               <div className="flex gap-2">
                 {(["png", "jpg", "gif"] as const).map((f) => (
-                  <button
+                  <Button variant="plain" size="natural"
                     key={f}
                     onClick={() => setResizeFormat(f)}
                     className={`flex-1 py-2 rounded-md text-sm font-semibold border transition ${
                       resizeFormat === f ? "bg-primary text-primary-foreground border-primary" : "bg-background/60 border-input hover:bg-accent"
                     }`}
-                  >{f.toUpperCase()}</button>
+                  >{f.toUpperCase()}</Button>
                 ))}
               </div>
               {isGif && resizeFormat !== "gif" && (
-                <p className="text-[11px] text-amber-400/80 mt-1.5">For animated GIFs only the GIF format preserves animation.</p>
+                <p className="text-[11px] text-warning mt-1.5">For animated GIFs only the GIF format preserves animation.</p>
               )}
             </div>
-            <button
+            <Button variant="plain" size="natural"
               onClick={handleResize}
               disabled={!image || busy}
-              className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+              className="w-full py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             >
               {busy ? "Resizing…" : "Resize"}
-            </button>
+            </Button>
           </>
         )}
       </div>
 
-      <div className="bg-card/40 backdrop-blur border border-border rounded-2xl p-5 flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="editor-preview min-w-0 bg-card/40 border border-border rounded-lg p-3 sm:p-5 flex flex-col items-center justify-center min-h-48 sm:min-h-[400px] gap-4">
         {resultUrl ? (
           <>
             <img src={resultUrl} alt="" className="max-w-full max-h-[60vh] object-contain rounded-md shadow-2xl" />
@@ -359,12 +360,12 @@ export function ImageCompressor() {
                 <> &nbsp;·&nbsp; -{Math.max(0, Math.round((1 - resultSize / origSize) * 100))}%</>
               )}
             </div>
-            <button
+            <Button variant="plain" size="natural"
               onClick={download}
-              className="px-6 py-3 rounded-xl font-bold text-primary-foreground bg-gradient-to-r from-[oklch(0.72_0.28_340)] via-[oklch(0.65_0.27_295)] to-[oklch(0.82_0.18_200)] hover:opacity-90 shadow-lg"
+              className="px-6 py-3 rounded-xl font-bold text-primary-foreground bg-primary hover:opacity-90 shadow-lg"
             >
               Download ({resultExt.toUpperCase()})
-            </button>
+            </Button>
           </>
         ) : (
           <p className="text-muted-foreground text-sm text-center">
